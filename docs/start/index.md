@@ -10,12 +10,12 @@ Yumerijs目前并未创建模板项目，所以你需要手动安装依赖。
 
 ::: code-group
 
-```npm [npm]
+```bash [npm]
 npm init
 npm install yumeri
 ```
 
-```yarn [yarn]
+```bash [yarn]
 yarn add yumeri
 ```
 
