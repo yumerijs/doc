@@ -6,7 +6,21 @@ Yumerijs 1.0.x正在快速迭代中，如果你不知道这是干什么用的或
 
 ## 安装
 
-Yumerijs目前并未创建模板项目，所以你需要手动安装依赖。
+最方便的项目初始化方式是使用项目模板：
+
+::: code-group
+
+```bash [npm]
+npm init yumeri
+```
+
+```bash [yarn]
+yarn create yumeri
+```
+
+当然，如果不想使用项目模板，也可手动安装yumeri依赖：
+
+:::
 
 ::: code-group
 
