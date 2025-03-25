@@ -37,4 +37,4 @@ yarn add yumeri
 
 # 关于
 
-“Yumeri”这个名字来自日语的ゆめり，意为夢莉，代表的是FireGuo为他的机器人设定的OC。在风梨团队的项产品线中，yumeri代表着开源与共享，因此以Yumeri命名的项目（包括Yumerijs、Yumeri Chat、Yumeri Bot）等都传递着风梨团队的开放开源理念。
+“Yumeri”这个名字来自日语的ゆめり，意为夢莉，代表的是FireGuo为他的机器人设定的OC。在风梨团队的产品线中，yumeri代表着开源与共享，因此以Yumeri命名的项目（包括Yumerijs、Yumeri Chat、Yumeri Bot）等都传递着风梨团队的开放开源理念。
