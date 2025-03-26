@@ -1,0 +1,3 @@
+# 创建一个插件
+
+在plugins文件夹新建一个以“yumeri-plugin-”开头的文件夹，进入后使用npm init
