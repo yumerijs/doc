@@ -7,6 +7,41 @@ export default {
     description: '基于nodejs的新一代模块化web应用构建平台',
     lang: 'zh-CN',
     themeConfig: {
+        sidebar: {
+      '/start/': [
+        {
+          text: '开始',
+          items: [
+            { text: '开始之前', link: '/start/' },
+            { text: '插件系统', link: '/start/plugin' },
+            { text: '指令系统', link: '/start/command' }
+          ]
+        }
+      ],
+
+      '/api/': [
+        {
+          text: 'API参考',
+          items: [
+            { text: '开始之前', link: '/start/' },
+            { text: '插件系统', link: '/start/plugin' },
+            { text: '指令系统', link: '/start/command' }
+          ]
+        }
+      ],
+      '/dev/': [
+        {
+          text: '开发指南',
+          items: [
+            { text: '总览', link: '/dev/' },
+            { text: '插件基础', link: '/dev/plugin' },
+            { text: '指令开发', link: '/dev/command' },
+            { text: '中间件', link: '/dev/middleware' },
+            { text: '事件监听', link: '/dev/event' }
+          ]
+        }
+      ]
+    }
         siteTitle: 'Yumeri', //站点标题
         logo: "https://api.flweb.cn/doc/image/bot.jpg",
         description: '一个Minecraft养老社区化服务器',//MCWindyPear Organization
