@@ -41,7 +41,7 @@ export default {
           ]
         }
       ]
-    }
+    },
         siteTitle: 'Yumeri', //站点标题
         logo: "https://api.flweb.cn/doc/image/bot.jpg",
         description: '一个Minecraft养老社区化服务器',//MCWindyPear Organization
