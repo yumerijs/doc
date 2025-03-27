@@ -9,10 +9,7 @@
 在插件src目录下新建index.ts，在其中输入以下内容：
 
 ``` typescript
-import { Core, Config, Session, Logger } from 'yumeri';
-//import { Logger } from '@yumerijs/core';
-import http from 'http';
-import { URL } from 'url'; // 导入 URL 模块
+import { Core, Config, Session } from 'yumeri';
 
 export async function apply(core: Core, config: Config) {
   core.command('myplugin')
