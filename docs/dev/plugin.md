@@ -8,3 +8,28 @@
 
 在插件src目录下新建index.ts，在其中输入以下内容：
 
+``` typescript
+import { Core, Config, Session, Logger } from 'yumeri';
+//import { Logger } from '@yumerijs/core';
+import http from 'http';
+import { URL } from 'url'; // 导入 URL 模块
+
+export async function apply(core: Core, config: Config) {
+  core.command('myplugin')
+    .action(async (session: Session, param?: any) => {
+      session.setMime('text');
+      session.body = `<h1>This is myplugin</h1>
+<h2>welcome!</h2>`;
+    });
+}
+
+export async function disable(core: Core) {
+
+}
+```
+
+重启yumeri以运行，打开yumeri监听地址+/myplugin，你将会看到：
+This is myplugin
+welcome!
+
+恭喜你，你运行了你的第一个插件。
