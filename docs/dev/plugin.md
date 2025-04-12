@@ -12,6 +12,7 @@
 import { Core, Config, Session } from 'yumeri';
 
 export async function apply(core: Core, config: Config) {
+  //加载插件时执行的操作
   core.command('myplugin')
     .action(async (session: Session, param?: any) => {
       session.setMime('text');
@@ -21,7 +22,7 @@ export async function apply(core: Core, config: Config) {
 }
 
 export async function disable(core: Core) {
-
+    //卸载插件时执行的操作
 }
 ```
 
@@ -30,3 +31,7 @@ This is myplugin
 welcome!
 
 恭喜你，你运行了你的第一个插件。
+
+## 注意事项
+
+对于目前的版本，yumeri不支持自动卸载插件注册的组件以及指令，因此你需要阅读后面的章节来学习如何在disable函数中卸载组件和指令。
