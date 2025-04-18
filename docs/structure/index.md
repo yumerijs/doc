@@ -1,6 +1,6 @@
 ---
 layout: page
-title: MCWindyPear
+title: 特别鸣谢
 ---
 <script setup>
 import {
@@ -11,23 +11,23 @@ import {
 } from 'vitepress/theme'
 const Server = [
     {
-    avatar: '/teammate/2/SuiFeng.jpg',
-    name: '随风潜入夜',
-    title: '技术支持',
-    desc: 'MCJPG组织成员，提供网站基础架构',
+    avatar: 'https://koishi.chat/logo.png',
+    name: 'Koishi',
+    title: '灵感来源',
+    desc: '开发规范、插件语法借鉴，灵感来源',
   },
 {
     avatar: 'https://api.flweb.cn/logos/my/fireguo.png',
     name: 'FireGuo',
-    title: '技术支持',
-    desc: '腐竹，风梨团队创始人',
+    title: '开发',
+    desc: '风梨团队创始人，主要开发人员',
   },
 ]
 </script>
 
 <VPTeamPage>
   <VPTeamPageTitle>
-    <template #title>组织架构</template>
+    <template #title>特别鸣谢</template>
   </VPTeamPageTitle>
   <VPTeamMembers size="medium" :members="Server" />
 
