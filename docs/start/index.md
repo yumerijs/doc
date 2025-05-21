@@ -1,40 +1,50 @@
-# 开始之前...
+# Yumeri 介绍
 
-::: warning
-Yumerijs 1.0.x正在快速迭代中，如果你不知道这是干什么用的或者你并没有需求，请等待1.1.x正式版发布。
-:::
+> **重要提示**：Yumeri框架目前处于快速迭代阶段，本文档中的API可能随时发生变化。请始终以GitHub仓库中的最新代码为准：https://github.com/yumerijs/yumeri
 
-## 安装
+## 什么是Yumeri
 
-最方便的项目初始化方式是使用项目模板：
+Yumeri是一个基于Node.js的新一代模块化Web应用构建平台。作为一个现代化的框架，Yumeri通过插件系统提供了高度的可扩展性和灵活性，使开发者能够快速构建模块化的Web应用。
 
-::: code-group
+## 名称由来
 
-```bash [npm]
-npm init yumeri
-```
+"Yumeri"这个名字来自日语的ゆめり，意为梦莉，代表的是FireGuo为他的机器人设定的OC。在风梨团队的产品线中，yumeri代表着开源与共享，因此以Yumeri命名的项目（包括Yumerijs、Yumeri Chat、Yumeri Bot）等都传递着风梨团队的开放开源理念。
 
-```bash [yarn]
-yarn create yumeri
-```
+## 设计理念
 
-当然，如果不想使用项目模板，也可手动安装yumeri依赖：
+Yumeri的核心设计理念是模块化和可扩展性。通过精心设计的插件系统，Yumeri实现了功能的高度解耦，使得开发者可以根据需求灵活组合各种功能模块，同时也便于团队协作开发和代码维护。
 
-:::
+### 核心特点
 
-::: code-group
+1. **模块化架构**：Yumeri采用模块化设计，核心功能和扩展功能通过插件系统清晰分离，便于维护和扩展。
 
-```bash [npm]
-npm init
-npm install yumeri
-```
+2. **插件驱动**：作为模块化框架，Yumeri的各个操作都通过插件完成。插件系统是Yumeri的核心，提供了强大的扩展能力。
 
-```bash [yarn]
-yarn add yumeri
-```
+3. **指令系统**：Yumeri中的"指令"概念在Web系统里面非常模糊。它不像机器人中那样是实时响应的会话，而是在Yumeri当中，若非websocket连接，所有的页面响应都将在指令执行完成后返回。
 
-:::
+4. **TypeScript支持**：Yumeri使用TypeScript开发，提供了类型安全和更好的开发体验。
 
-## 关于
+## 框架结构
 
-“Yumeri”这个名字来自日语的ゆめり，意为夢莉，代表的是FireGuo为他的机器人设定的OC。在风梨团队的产品线中，yumeri代表着开源与共享，因此以Yumeri命名的项目（包括Yumerijs、Yumeri Chat、Yumeri Bot）等都传递着风梨团队的开放开源理念。
+Yumeri框架主要由以下几个部分组成：
+
+1. **核心模块（core）**：提供框架的基础功能和API，是整个框架的核心。
+
+2. **加载器（loader）**：负责加载和管理插件，是连接核心和插件的桥梁。
+
+3. **插件系统**：Yumeri的插件采用npm包形式，包名前缀为yumeri-plugin-，用于识别此为Yumeri的插件。框架自带了几个基础插件：
+   - yumeri-plugin-console：控制台插件
+   - yumeri-plugin-echo：（测试专用）输出内容插件
+   - yumeri-plugin-server：服务器插件
+
+## 适用场景
+
+Yumeri适合构建各种类型的Web应用，特别是那些需要高度模块化和可扩展性的项目。无论是简单的网站还是复杂的Web应用，Yumeri都能提供灵活的解决方案。
+
+## 开源协议
+
+Yumeri是一个开源项目，遵循相关开源协议，鼓励社区贡献和参与。
+
+---
+
+在接下来的章节中，我们将详细介绍如何安装和使用Yumeri，以及如何开发自己的插件来扩展Yumeri的功能。
