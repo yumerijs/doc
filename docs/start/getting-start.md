@@ -58,12 +58,12 @@ yarn add yumeri
 一个典型的Yumeri项目结构如下：
 
 ```
-my-yumeri-project/
+yumeri-app/
 ├── node_modules/
-├── plugins/           # 存放自定义插件
+├── plugins/           # 存放自定义插件（开发时）
 ├── config.yml         # Yumeri配置文件
 ├── package.json
-└── tsconfig.json      # TypeScript配置（如果使用TS）
+└── tsconfig.json      # TypeScript配置
 ```
 
 ## 基本配置
@@ -86,7 +86,7 @@ npm run dev
 yarn dev
 ```
 
-这将启动开发模式，您可以在浏览器中访问相应地址（通常是http://localhost:3000）查看您的应用。
+这将启动开发模式，您可以在浏览器中访问相应地址（通常是http://localhost:14510）查看您的应用。
 
 ## 基本使用
 
@@ -107,17 +107,18 @@ Yumeri的基本使用流程如下：
 1. 初始化项目：
 
 ```bash
-npm init yumeri my-first-yumeri-app
-cd my-first-yumeri-app
+yarn create yumeri
+// 或 npm init yumeri
+cd yumeri-app
 ```
 
 2. 启动项目：
 
 ```bash
-npm run dev
+yarn dev
 ```
 
-3. 访问http://localhost:3000，您应该能看到Yumeri的欢迎页面。
+3. 访问http://localhost:14510，您应该能看到Yumeri的欢迎页面。
 
 ## 下一步
 
