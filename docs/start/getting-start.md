@@ -123,8 +123,8 @@ npm run dev
 
 现在您已经了解了Yumeri的基本安装和使用方法，接下来可以：
 
-- 学习[插件系统](./plugin-system.md)，了解如何使用和创建插件
-- 深入[开发指南](./development-guide.md)，学习更高级的开发技巧
+- 学习[插件系统](./plugin.md)，了解如何使用插件
+- 深入[开发指南](/dev/)，学习如何为yumeri进行开发
 - 查看[示例项目](https://github.com/yumerijs/yumeri/tree/main/plugins)，获取实际应用的灵感
 
 记住，由于Yumeri仍在快速迭代中，请定期查看官方仓库获取最新更新和API变更。
