@@ -46,9 +46,8 @@ Yumeri使用TypeScript开发，提供了类型安全和更好的开发体验。�
 
 ### 调试技巧
 
-1. **使用控制台插件**：`yumeri-plugin-console`提供了丰富的日志和调试功能
-2. **开发模式**：在开发模式下，Yumeri会自动重新加载修改的代码
-3. **TypeScript错误检查**：利用TypeScript的类型检查发现潜在问题
+1. **开发模式**：在开发模式下，Yumeri会自动重新加载修改的代码
+2. **TypeScript错误检查**：利用TypeScript的类型检查发现潜在问题
 
 ### 性能优化
 
