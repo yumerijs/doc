@@ -1,4 +1,4 @@
-# Yumeri 开发指南
+# 开发指南
 
 > **重要提示**：Yumeri框架目前处于快速迭代阶段，本文档中的API可能随时发生变化。请始终以GitHub仓库中的最新代码为准：https://github.com/yumerijs/yumeri
 
