@@ -86,7 +86,7 @@ npm run dev
 yarn dev
 ```
 
-这将启动开发模式，您可以在浏览器中访问相应地址（通常是http://localhost:14510）查看您的应用。
+这将启动开发模式，您可以在浏览器中访问相应地址（通常是`http://localhost:14510`）查看您的应用。
 
 ## 基本使用
 
@@ -118,14 +118,14 @@ cd yumeri-app
 yarn dev
 ```
 
-3. 访问http://localhost:14510，您应该能看到Yumeri的欢迎页面。
+3. 访问`http://localhost:14510`，您应该能看到Yumeri的欢迎页面。
 
 ## 下一步
 
 现在您已经了解了Yumeri的基本安装和使用方法，接下来可以：
 
 - 学习[插件系统](./plugin.md)，了解如何使用插件
-- 深入[开发指南](/dev)，学习如何为yumeri进行开发
+- 深入[开发指南](/dev/index.md)，学习如何为yumeri进行开发
 - 查看[示例项目](https://github.com/yumerijs/yumeri/tree/main/plugins)，获取实际应用的灵感
 
 记住，由于Yumeri仍在快速迭代中，请定期查看官方仓库获取最新更新和API变更。
