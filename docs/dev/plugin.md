@@ -175,7 +175,3 @@ export async function disable(core: Core) {
 这个插件提供了两个命令：
 - `/counter-increment`：增加计数并返回当前值
 - `/counter-get`：获取当前计数值
-
----
-
-在下一章节中，我们将详细介绍指令系统的开发，包括参数处理、响应格式等高级主题。
