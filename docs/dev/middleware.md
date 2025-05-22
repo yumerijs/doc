@@ -2,11 +2,9 @@
 
 > **重要提示**：Yumeri框架目前处于快速迭代阶段，本文档中的API可能随时发生变化。请始终以GitHub仓库中的最新代码为准：https://github.com/yumerijs/yumeri
 
-> 该功能正在内部测试中，详情可进入风梨团队内部Q群查看进度
-
 ## 中间件概述
 
-中间件是Yumeri框架中一个强大的概念，它允许开发者在请求处理流程中插入自定义逻辑。中间件可以在指令执行前后执行特定操作，例如日志记录、权限验证、数据转换等。
+中间件是Yumeri框架中一个重要的概念，它允许开发者在请求处理流程中插入自定义逻辑。中间件可以在指令执行前后执行特定操作，例如日志记录、权限验证、数据转换等。
 
 ## 中间件的工作原理
 
@@ -39,13 +37,13 @@ type Middleware = (session: Session, next: () => Promise<void>) => Promise<void>
 ```typescript
 const logMiddleware: Middleware = async (session, next) => {
   // 前置处理
-  console.log(`[${new Date().toISOString()}] Request: ${session.path}`);
+  logger.info(`[${new Date().toISOString()}] Request: ${session.path}`);
   
   // 调用下一个中间件或核心逻辑
   await next();
   
   // 后置处理
-  console.log(`[${new Date().toISOString()}] Response: ${session.path}, Status: ${session.status}`);
+  logger.info(`[${new Date().toISOString()}] Response: ${session.path}, Status: ${session.status}`);
 };
 ```
 
@@ -106,7 +104,7 @@ const errorHandlerMiddleware: Middleware = async (session, next) => {
   try {
     await next();
   } catch (error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
     session.status = 500;
     session.body = 'Internal Server Error';
     session.setMime('text');
@@ -146,7 +144,7 @@ const performanceMiddleware: Middleware = async (session, next) => {
   await next();
   
   const duration = Date.now() - startTime;
-  console.log(`Request to ${session.path} took ${duration}ms`);
+  logger.info(`Request to ${session.path} took ${duration}ms`);
 };
 ```
 
@@ -179,8 +177,4 @@ const jsonBodyParserMiddleware: Middleware = async (session, next) => {
 
 ## 注意事项
 
-由于Yumeri目前版本，不支持自动卸载插件注册的中间件，因此在插件的`disable`函数中需要手动清理注册的中间件。具体实现方式可能随版本变化，请参考最新的官方文档或源码。
-
----
-
-在下一章节中，我们将详细介绍事件监听系统，包括事件类型、监听器注册和事件触发等内容。
+由于Yumeri目前版本，不支持自动卸载插件注册的中间件，因此在插件的`disable`函数中需要手动清理注册的中间件。具体实现方式可能随版本变化，请参考后续实现。
