@@ -8,10 +8,10 @@
 
 ## 注册指令
 
-指令注册通过链式调用实现，将command对象返回至core，代码如下：
+指令注册通过链式调用实现，将command对象返回至上下文，代码如下：
 
 ```typescript
-core.command('foo')
+ctx.command('foo')
   .action(async (session: Session, param?: any) => {
     logger.info('excute command foo');
     session.body = 'bar';
@@ -19,7 +19,7 @@ core.command('foo')
   });
 ```
 
-首先，使用`core.command(name)`定义一个command对象，然后调用action函数注册指令代码。该函数不能返回任何返回值。传入参数有session以及param。
+首先，使用`ctx.command(name)`定义一个command对象，然后调用action函数注册指令代码。该函数不能返回任何返回值。传入参数有session以及param。
 
 其中，session为会话信息，存储着包含用户ip在内的信息。
 
@@ -32,7 +32,7 @@ param是参数，包含了二级及之后路径（param.path，如路径是/aaa/
 在指令系统中，参数处理是一个重要的部分。Yumeri提供了灵活的参数处理机制：
 
 ```typescript
-core.command('greet')
+ctx.command('greet')
   .action(async (session: Session, param?: any) => {
     const name = param?.name || 'Guest';
     session.body = `Hello, ${name}!`;
@@ -65,7 +65,7 @@ session.body = { message: 'Hello, World!' };
 Yumeri的指令系统支持路径参数，可以通过`param.path`获取：
 
 ```typescript
-core.command('article')
+ctx.command('article')
   .action(async (session: Session, param?: any) => {
     // 访问 /article/2023/05/21
     // param.path 将是 "2023/05/21"
@@ -84,7 +84,7 @@ core.command('article')
 在指令处理中，妥善处理错误是很重要的：
 
 ```typescript
-core.command('risky')
+ctx.command('risky')
   .action(async (session: Session, param?: any) => {
     try {
       // 可能抛出错误的代码
@@ -116,10 +116,10 @@ const logMiddleware = async (session: Session, next: () => Promise<void>) => {
 };
 
 // 使用中间件
-core.use(logMiddleware);
+ctx.use(logMiddleware);
 
 // 指令链
-core.command('chain')
+ctx.command('chain')
   .use(async (session, next) => {
     // 前置处理
     session.data.startTime = Date.now();
@@ -142,7 +142,3 @@ core.command('chain')
 3. **错误处理**：妥善处理可能出现的错误，提供友好的错误信息
 4. **响应格式**：根据需求选择适当的响应格式
 5. **代码组织**：将相关指令组织在一起，便于维护
-
-## 注意事项
-
-由于Yumeri目前版本，不支持自动卸载插件注册的指令，因此在插件的`disable`函数中需要手动清理注册的指令。具体实现方式可能随版本变化，请参考后续实现。
