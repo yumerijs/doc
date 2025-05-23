@@ -25,7 +25,7 @@ export async function apply(ctx: Context, config: Config) {
     });
 }
 
-export async function disable(core: Core) {
+export async function disable(ctx: Context) {
   // 卸载插件时执行的操作
 }
 ```
@@ -48,7 +48,7 @@ yumeri-plugin-example/
 
 ### 插件入口文件
 
-插件的入口文件（通常是`src/index.ts`）必须导出两个函数：
+插件的入口文件（编译后通常是是`dist/index.js`）可以导出两个函数：
 
 1. **apply**：插件加载时调用，用于初始化插件和注册功能
 2. **disable**：插件卸载时调用，用于清理资源等
@@ -80,7 +80,7 @@ interface Context {
   use(middleware: Middleware): void;
   
   // 监听事件
-  on(event: string, handler: EventHandler): void;
+  on(event: string, listener: EventListener): void;
 
   // 获取Core实例
   getCore(): Core;
