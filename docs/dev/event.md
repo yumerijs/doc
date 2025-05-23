@@ -17,18 +17,19 @@ Yumeri框架内置了多种事件类型，包括但不限于：
 
 ## 监听事件
 
-使用`core.on()`方法注册事件监听器：
+使用`ctx.on()`方法注册事件监听器：
 
 ```typescript
-export async function apply(core: Core, config: Config) {
+export async function apply(ctx: Context, config: Config) {
+  const logger = new Logger(name)
   // 监听应用启动事件
-  core.on('app:start', () => {
-    console.log('Application started');
+  ctx.on('app:start', () => {
+    logger.info('Application started');
   });
   
   // 监听请求完成事件
-  core.on('request:end', (session: Session) => {
-    console.log(`Request to ${session.path} completed with status ${session.status}`);
+  ctx.on('request:end', (session: Session) => {
+    logger.info(`Request to ${session.path} completed with status ${session.status}`);
   });
   
   // 其他插件初始化代码...
@@ -37,59 +38,11 @@ export async function apply(core: Core, config: Config) {
 
 ## 触发事件
 
-使用`core.emit()`方法触发事件：
+使用`ctx.emit()`方法触发事件：
 
 ```typescript
 // 触发自定义事件
-core.emit('myPlugin:dataUpdated', { id: 123, name: 'Example' });
-```
-
-## 事件监听器的移除
-
-在插件卸载时，应该移除注册的事件监听器，以避免内存泄漏：
-
-```typescript
-// 存储事件监听器引用
-const listeners = [];
-
-export async function apply(core: Core, config: Config) {
-  // 注册事件监听器并存储引用
-  const listener = () => console.log('Event triggered');
-  core.on('someEvent', listener);
-  listeners.push({ event: 'someEvent', listener });
-  
-  // 其他插件初始化代码...
-}
-
-export async function disable(core: Core) {
-  // 移除所有注册的事件监听器
-  for (const { event, listener } of listeners) {
-    core.off(event, listener);
-  }
-}
-```
-
-## 事件传播
-
-Yumeri的事件系统支持事件传播，事件监听器按照注册顺序依次执行：
-
-```typescript
-// 第一个监听器
-core.on('someEvent', (data) => {
-  console.log('First listener:', data);
-});
-
-// 第二个监听器
-core.on('someEvent', (data) => {
-  console.log('Second listener:', data);
-});
-
-// 触发事件
-core.emit('someEvent', { message: 'Hello' });
-
-// 输出:
-// First listener: { message: 'Hello' }
-// Second listener: { message: 'Hello' }
+ctx.emit('myPlugin:dataUpdated', { id: 123, name: 'Example' });
 ```
 
 ## 异步事件处理
@@ -98,22 +51,14 @@ core.emit('someEvent', { message: 'Hello' });
 
 ```typescript
 // 异步事件监听器
-core.on('someEvent', async (data) => {
+ctx.on('someEvent', async (data) => {
   await someAsyncOperation();
-  console.log('Async operation completed');
+  logger.info('Async operation completed');
 });
 
 // 触发事件
-core.emit('someEvent', { message: 'Hello' });
+ctx.emit('someEvent', { message: 'Hello' });
 // 代码会立即继续执行，不会等待异步操作完成
-```
-
-如果需要等待所有监听器执行完成，可以使用`core.emitAsync()`方法（如果Yumeri提供此方法）：
-
-```typescript
-// 触发事件并等待所有监听器执行完成
-await core.emitAsync('someEvent', { message: 'Hello' });
-// 所有监听器（包括异步监听器）执行完成后才会继续
 ```
 
 ## 事件命名空间
@@ -122,11 +67,11 @@ await core.emitAsync('someEvent', { message: 'Hello' });
 
 ```typescript
 // 使用插件名作为命名空间前缀
-core.on('myPlugin:userLoggedIn', (user) => {
-  console.log(`User ${user.name} logged in`);
+ctx.on('myPlugin:userLoggedIn', (user) => {
+  logger.info(`User ${user.name} logged in`);
 });
 
-core.emit('myPlugin:userLoggedIn', { id: 123, name: 'John' });
+ctx.emit('myPlugin:userLoggedIn', { id: 123, name: 'John' });
 ```
 
 ## 常见用例
@@ -137,18 +82,18 @@ core.emit('myPlugin:userLoggedIn', { id: 123, name: 'John' });
 
 ```typescript
 // 插件A
-export async function apply(core: Core, config: Config) {
+export async function apply(ctx: Context, config: Config) {
   // 触发事件
   setInterval(() => {
-    core.emit('pluginA:heartbeat', { timestamp: Date.now() });
+    ctx.emit('pluginA:heartbeat', { timestamp: Date.now() });
   }, 5000);
 }
 
 // 插件B
-export async function apply(core: Core, config: Config) {
+export async function apply(ctx: Context, config: Config) {
   // 监听事件
-  core.on('pluginA:heartbeat', (data) => {
-    console.log(`Received heartbeat from Plugin A at ${new Date(data.timestamp)}`);
+  ctx.on('pluginA:heartbeat', (data) => {
+    logger.info(`Received heartbeat from Plugin A at ${new Date(data.timestamp)}`);
   });
 }
 ```
@@ -161,12 +106,12 @@ export async function apply(core: Core, config: Config) {
 // 数据更新时触发事件
 function updateData(id, newData) {
   database[id] = newData;
-  core.emit('data:updated', { id, data: newData });
+  ctx.emit('data:updated', { id, data: newData });
 }
 
 // 监听数据更新事件
-core.on('data:updated', ({ id, data }) => {
-  console.log(`Data ${id} updated:`, data);
+ctx.on('data:updated', ({ id, data }) => {
+  logger.info(`Data ${id} updated:`, data);
   // 更新缓存、UI等
 });
 ```
@@ -178,10 +123,6 @@ core.on('data:updated', ({ id, data }) => {
 3. **清理资源**：在插件卸载时移除所有注册的事件监听器
 4. **错误处理**：在事件监听器中妥善处理错误，避免影响其他监听器
 5. **性能考虑**：避免在频繁触发的事件监听器中执行耗时操作
-
-## 注意事项
-
-由于Yumeri目前版本，不支持自动卸载插件注册的事件监听器，因此在插件的`disable`函数中需要手动清理注册的监听器。具体实现方式可能随版本变化，请参考后续实现。
 
 ---
 
