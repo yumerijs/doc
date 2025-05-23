@@ -49,12 +49,12 @@ const logMiddleware: Middleware = async (session, next) => {
 
 ## 注册全局中间件
 
-使用`core.use()`方法注册全局中间件，它将应用于所有指令：
+使用`ctx.use()`方法注册全局中间件，它将应用于所有指令：
 
 ```typescript
-export async function apply(core: Core, config: Config) {
+export async function apply(ctx: Context, config: Config) {
   // 注册全局中间件
-  core.use(logMiddleware);
+  ctx.use(logMiddleware);
   
   // 其他插件初始化代码...
 }
@@ -65,7 +65,7 @@ export async function apply(core: Core, config: Config) {
 也可以为特定指令注册中间件：
 
 ```typescript
-core.command('secure')
+ctx.command('secure')
   .use(authMiddleware)  // 先执行认证中间件
   .use(rateLimitMiddleware)  // 然后执行速率限制中间件
   .action(async (session) => {
@@ -81,9 +81,9 @@ core.command('secure')
 
 ```typescript
 // 全局中间件链
-core.use(middleware1);
-core.use(middleware2);
-core.use(middleware3);
+ctx.use(middleware1);
+ctx.use(middleware2);
+ctx.use(middleware3);
 
 // 执行顺序：
 // 1. middleware1（前置）
@@ -112,7 +112,7 @@ const errorHandlerMiddleware: Middleware = async (session, next) => {
 };
 
 // 注册为全局中间件
-core.use(errorHandlerMiddleware);
+ctx.use(errorHandlerMiddleware);
 ```
 
 ## 常用中间件示例
@@ -174,7 +174,3 @@ const jsonBodyParserMiddleware: Middleware = async (session, next) => {
 3. **性能考虑**：避免在中间件中执行耗时操作，必要时使用异步处理
 4. **顺序安排**：合理安排中间件的执行顺序，确保依赖关系正确
 5. **状态管理**：避免在中间件中修改全局状态，使用session存储请求相关状态
-
-## 注意事项
-
-由于Yumeri目前版本，不支持自动卸载插件注册的中间件，因此在插件的`disable`函数中需要手动清理注册的中间件。具体实现方式可能随版本变化，请参考后续实现。
