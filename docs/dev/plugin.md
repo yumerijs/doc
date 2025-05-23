@@ -15,7 +15,7 @@
 ```typescript
 import { Context, Config, Session } from 'yumeri';
 
-export async function apply(core: Core, config: Config) {
+export async function apply(ctx: Context, config: Config) {
   // 加载插件时执行的操作
   ctx.command('foo')
     .action(async (session: Session, param?: any) => {
