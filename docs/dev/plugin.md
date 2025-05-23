@@ -13,14 +13,14 @@
 在插件的`src`目录下新建`index.ts`，在其中输入以下内容：
 
 ```typescript
-import { Core, Config, Session } from 'yumeri';
+import { Context, Config, Session } from 'yumeri';
 
 export async function apply(core: Core, config: Config) {
   // 加载插件时执行的操作
-  core.command('myplugin')
+  ctx.command('foo')
     .action(async (session: Session, param?: any) => {
       session.setMime('text');
-      session.body = `<h1>This is myplugin</h1>
+      session.body = `<h1>This is my plugin</h1>
 <h2>welcome!</h2>`;
     });
 }
@@ -30,7 +30,7 @@ export async function disable(core: Core) {
 }
 ```
 
-重启yumeri以运行，打开yumeri监听地址+/myplugin，你将会看到：This is myplugin welcome!
+重启yumeri以运行，打开yumeri监听地址+/foo，你将会看到：This is myplugin welcome!
 
 恭喜你，你运行了你的第一个插件。
 
@@ -41,8 +41,7 @@ export async function disable(core: Core) {
 ```
 yumeri-plugin-example/
 ├── src/
-│   ├── index.ts        # 插件入口文件
-│   └── components/     # 组件目录（可选）
+│   ├── index.ts        # 插件入口
 ├── package.json        # 包信息
 └── tsconfig.json       # TypeScript配置
 ```
@@ -52,28 +51,28 @@ yumeri-plugin-example/
 插件的入口文件（通常是`src/index.ts`）必须导出两个函数：
 
 1. **apply**：插件加载时调用，用于初始化插件和注册功能
-2. **disable**：插件卸载时调用，用于清理资源
+2. **disable**：插件卸载时调用，用于清理资源等
 
 这两个函数的签名如下：
 
 ```typescript
-export async function apply(core: Core, config: Config): Promise<void> {
+export async function apply(ctx: Context, config: Config): Promise<void> {
   // 初始化代码
 }
 
-export async function disable(core: Core): Promise<void> {
+export async function disable(ctx: Context): Promise<void> {
   // 清理代码
 }
 ```
 
 ## 核心API
 
-### Core对象
+### Context对象
 
-`Core`对象是Yumeri的核心，提供了注册命令、中间件和事件监听等功能：
+`Context`对象是Yumeri插件系统的重要组成部分，提供了对于Core的注册命令、中间件和事件监听等功能的封装：
 
 ```typescript
-interface Core {
+interface Context {
   // 注册命令
   command(name: string): Command;
   
@@ -82,9 +81,14 @@ interface Core {
   
   // 监听事件
   on(event: string, handler: EventHandler): void;
+
+  // 获取Core实例
+  getCore(): Core;
   
   // 其他方法...
 }
+
+一般而言，除非有特殊需求，否则请使用Context对象来注册组件和指令。直接操作Core将导致无法正确卸载插件。
 ```
 
 ### Config对象
@@ -119,7 +123,7 @@ interface Session {
 命令是Yumeri插件的核心功能之一，用于处理特定的请求路径：
 
 ```typescript
-core.command('hello')
+ctx.command('hello')
   .action(async (session: Session, param?: any) => {
     session.setMime('text');
     session.body = 'Hello, World!';
@@ -127,10 +131,6 @@ core.command('hello')
 ```
 
 上面的代码注册了一个名为`hello`的命令，当访问`/hello`路径时，会返回"Hello, World!"。
-
-## 注意事项
-
-对于目前的版本，yumeri不支持自动卸载插件注册的组件以及指令，因此你需要阅读后面的章节来学习如何在`disable`函数中卸载组件和指令。
 
 ## 插件开发最佳实践
 
@@ -145,13 +145,13 @@ core.command('hello')
 以下是一个简单的计数器插件示例：
 
 ```typescript
-import { Core, Config, Session } from 'yumeri';
+import { Context, Config, Session } from 'yumeri';
 
 let counter = 0;
 
-export async function apply(core: Core, config: Config) {
+export async function apply(ctx: Context, config: Config) {
   // 注册增加计数的命令
-  core.command('counter-increment')
+  ctx.command('counter-increment')
     .action(async (session: Session) => {
       counter++;
       session.setMime('text');
@@ -159,14 +159,14 @@ export async function apply(core: Core, config: Config) {
     });
   
   // 注册获取计数的命令
-  core.command('counter-get')
+  ctx.command('counter-get')
     .action(async (session: Session) => {
       session.setMime('text');
       session.body = `Current count: ${counter}`;
     });
 }
 
-export async function disable(core: Core) {
+export async function disable(ctx: Context) {
   // 清理资源
   delete counter;
 }
