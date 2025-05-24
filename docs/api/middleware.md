@@ -299,7 +299,7 @@ const createRateLimitMiddleware = (options: {
   window: number;
   message?: string;
 }): Middleware => {
-  const clients = new Map<string, number[]>();
+  const clients = new Map`<string, number[]>`();
   
   return async (session, next) => {
     const now = Date.now();
@@ -384,4 +384,3 @@ ctx.use('non-blocking', async (session, next) => {
   const result = await resultPromise;
   // 使用结果进行后处理
 });
-```
