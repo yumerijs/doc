@@ -23,9 +23,16 @@ export default {
         {
           text: 'API参考',
           items: [
-            { text: '开始之前', link: '/start/' },
-            { text: '插件系统', link: '/start/plugin' },
-            { text: '指令系统', link: '/start/command' }
+            { text: '总览', link: '/api/' },
+            { text: '插件 (Plugin)', link: '/api/plugin' },
+            { text: '指令 (Command)', link: '/api/command' },
+            { text: '事件 (Event)', link: '/api/event' },
+            { text: '中间件 (Middleware)', link: '/api/middleware' },
+            { text: '配置 (Config)', link: '/api/config' },
+            { text: '会话 (Session)', link: '/api/session' },
+            { text: '上下文 (Context)', link: '/api/context' },
+            { text : '平台 (Platform)', link: '/api/platform' },
+            { text: '日志 (Logger)', link: '/api/logger' }
           ]
         }
       ],
