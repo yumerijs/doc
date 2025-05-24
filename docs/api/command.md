@@ -85,7 +85,7 @@ ctx.command('secure')
   });
 ```
 
-### async execute(session: any, ...args: any[]): Promise<Session | null>
+### async execute(session: any, ...args: any[]): `Promise<Session | null>`
 
 执行指令，包括中间件链和处理函数。
 
@@ -98,7 +98,7 @@ ctx.command('secure')
 
 **注意：** 通常不需要直接调用此方法，框架会在适当的时候自动调用。
 
-### async executeHandler(session: any, ...args: any[]): Promise<Session | null>
+### async executeHandler(session: any, ...args: any[]): `Promise<Session | null>`
 
 仅执行指令处理函数，不包含中间件链。
 
@@ -289,4 +289,3 @@ ctx.command('settings')
   .action(async (session) => {
     // ...
   });
-```
