@@ -37,16 +37,16 @@ export class Session {
 | 属性 | 类型 | 描述 |
 |------|------|------|
 | ip | string | 用户 IP 地址 |
-| cookie | Record<string, string> | 请求中的 Cookie 信息 |
-| query | Record<string, string> \| undefined | 请求查询参数 |
+| cookie | `Record<string, string>` | 请求中的 Cookie 信息 |
+| query | `Record<string, string>` \| undefined | 请求查询参数 |
 | sessionid | string | 会话唯一标识符 |
-| data | Record<string, any> | 会话数据存储 |
-| newCookie | Record<string, string> | 要设置的新 Cookie |
-| head | Record<string, any> | 响应头信息 |
+| data | `Record<string, any>` | 会话数据存储 |
+| newCookie | `Record<string, string>` | 要设置的新 Cookie |
+| head | `Record<string, any>` | 响应头信息 |
 | status | number | 响应状态码，默认为 200 |
 | body | any | 响应体内容 |
 | platform | Platform | 会话所属的平台实例 |
-| properties | Record<string, any> \| undefined | 会话附加属性 |
+| properties | `Record<string, any>` \| undefined | 会话附加属性 |
 
 ## 方法
 
@@ -274,4 +274,3 @@ ctx.command('api')
       sendResponse(session, false, null, err.message);
     }
   });
-```
