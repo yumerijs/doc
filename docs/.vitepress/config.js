@@ -57,6 +57,7 @@ export default {
             { text: "主页", link: "/" },
             { text: "开始", link: "/start/" },
             { text: "开发指南", link: "/dev/" },
+            { text: "API参考", link: "/api/" },
             { text: "风梨团队", link: "//doc.flweb.cn" },
             { text: "鸣谢", link: "/structure/" },
         ],
