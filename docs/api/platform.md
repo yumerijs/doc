@@ -51,9 +51,9 @@ export abstract class Platform {
 |------|------|------|
 | status | 'idle' \| 'starting' \| 'running' \| 'stopping' \| 'error' | 平台当前状态（受保护） |
 | errorMessage | string \| null | 平台错误信息（受保护） |
-| config | Record<string, any> | 平台配置（受保护） |
+| config | `Record<string, any>` | 平台配置（受保护） |
 | instanceId | string | 平台实例ID（受保护） |
-| eventListeners | Record<string, Array<(...args: any[]) => void>> | 平台事件监听器（受保护） |
+| eventListeners | `Record<string, Array<(...args: any[]) => void>>` | 平台事件监听器（受保护） |
 
 ## 抽象方法（必须实现）
 
@@ -100,14 +100,14 @@ export abstract class Platform {
 **返回值：**
 - `string` - 平台ID
 
-### getPlatformStatus(): Record<string, any>
+### getPlatformStatus(): `Record<string, any>`
 
 获取平台状态。
 
 **返回值：**
 - `Record<string, any>` - 平台状态对象
 
-### startPlatform(core?: Core): Promise<any>
+### startPlatform(core?: Core): `Promise<any>`
 
 启动平台。
 
@@ -117,7 +117,7 @@ export abstract class Platform {
 **返回值：**
 - `Promise<any>` - 启动结果
 
-### stopPlatform(): Promise<void>
+### stopPlatform(): `Promise<void>`
 
 停止平台。
 
@@ -126,7 +126,7 @@ export abstract class Platform {
 
 ## 实例方法
 
-### async restartPlatform(core?: Core): Promise<any>
+### async restartPlatform(core?: Core): `Promise<any>`
 
 重启平台。
 
@@ -157,7 +157,7 @@ platform.setConfig('port', 3000);
 platform.setConfig('host', 'localhost');
 ```
 
-### getConfig<T>(key: string, defaultValue?: T): T
+### getConfig`<T>`(key: string, defaultValue?: T): T
 
 获取平台配置。
 
@@ -219,7 +219,7 @@ if (errorMessage) {
 }
 ```
 
-### on(event: string, listener: (...args: any[]) => void): void
+### on(event: string, listener: `(...args: any[]) => void`): void
 
 添加平台事件监听器。
 
@@ -239,7 +239,7 @@ platform.on('error', (error) => {
 });
 ```
 
-### off(event: string, listener: (...args: any[]) => void): void
+### off(event: string, listener: `(...args: any[]) => void`): void
 
 移除平台事件监听器。
 
@@ -261,7 +261,7 @@ platform.on('error', errorHandler);
 platform.off('error', errorHandler);
 ```
 
-### createSession(ip: string, cookie: Record<string, string>, query?: Record<string, string>): Session
+### createSession(ip: string, cookie: `Record<string, string>`, query?: `Record<string, string>`): Session
 
 创建会话。
 
@@ -334,7 +334,7 @@ const mimeTypes = platform.getSupportedMimeTypes();
 console.log('Supported MIME types:', mimeTypes);
 ```
 
-### getMetadata(): Record<string, any>
+### getMetadata(): `Record<string, any>`
 
 获取平台元数据。
 
@@ -350,7 +350,7 @@ console.log('Platform metadata:', metadata);
 
 ## 静态方法
 
-### static getConfigSchema(): Record<string, ConfigSchema>
+### static getConfigSchema(): `Record<string, ConfigSchema>`
 
 获取平台配置模式。
 
@@ -658,4 +658,3 @@ public static getConfigSchema(): Record<string, ConfigSchema> {
     })
   };
 }
-```
