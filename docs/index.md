@@ -6,7 +6,7 @@ hero:
   tagline: 新一代模块化Web应用构建平台
   image:
     src: https://api.flweb.cn/doc/image/bot.jpg
-    alt: MCWP
+    alt: Yumeri
   actions:
     - theme: brand
       text: 马上开始

@@ -52,7 +52,6 @@ export default {
     },
         siteTitle: 'Yumeri', //站点标题
         logo: "https://api.flweb.cn/doc/image/bot.jpg",
-        description: '一个Minecraft养老社区化服务器',//MCWindyPear Organization
         nav: [
             { text: "主页", link: "/" },
             { text: "开始", link: "/start/" },
@@ -62,7 +61,7 @@ export default {
             { text: "鸣谢", link: "/structure/" },
         ],
         socialLinks: [
-            { icon: "github", link: "https://github.com/windypear-team" },
+            { icon: "github", link: "https://github.com/yumerijs" },
         ],
         footer: {
             message: 'Yumerijs',
