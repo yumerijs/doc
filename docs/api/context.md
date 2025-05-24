@@ -59,7 +59,7 @@ export async function apply(ctx: Context, config: Config) {
 }
 ```
 
-### on(name: string, listener: (...args: any[]) => Promise<void>): void
+### on(name: string, listener: `(...args: any[]) => Promise<void>`): void
 
 注册一个事件监听器。
 
@@ -113,7 +113,7 @@ export async function apply(ctx: Context, config: Config) {
 }
 ```
 
-### async emit(event: string, ...args: any[]): Promise<void>
+### async emit(event: string, ...args: any[]): `Promise<void>`
 
 触发一个事件。
 
@@ -255,4 +255,3 @@ export async function apply(ctx: Context, config: Config) {
   // 注册自己提供的组件
   ctx.registerComponent('my-service', myService);
 }
-```
