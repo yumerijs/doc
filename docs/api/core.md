@@ -44,22 +44,22 @@ export class Core {
 
 | 属性 | 类型 | 描述 |
 |------|------|------|
-| plugins | { [name: string]: Plugin & { depend?: string[]; provide?: string[] } } | 已加载的插件集合 |
+| plugins | `{ [name: string]: Plugin & { depend?: string[]; provide?: string[] } }` | 已加载的插件集合 |
 | config | any | 框架配置对象 |
 | platforms | Platform[] | 已注册的平台列表 |
-| components | { [name: string]: any } | 已注册的组件集合 |
-| commands | Record<string, Command> | 已注册的命令集合 |
+| components | `{ [name: string]: any }` | 已注册的组件集合 |
+| commands | `Record<string, Command>` | 已注册的命令集合 |
 | logger | Logger | 核心日志记录器 |
-| providedComponents | { [name: string]: string } | 组件与提供该组件的插件映射 |
-| cmdtoplu | Record<string, string> | 命令与插件的映射关系 |
-| comtoplu | Record<string, string> | 组件与插件的映射关系 |
-| evttoplu | Record<string, Record<string, ((...args: any[]) => Promise<void>)[]>> | 事件与插件的映射关系 |
-| mdwtoplu | Record<string, string> | 中间件与插件的映射关系 |
-| plftoplu | Record<string, string> | 平台与插件的映射关系 |
+| providedComponents | `{ [name: string]: string }` | 组件与提供该组件的插件映射 |
+| cmdtoplu | `Record<string, string>` | 命令与插件的映射关系 |
+| comtoplu | `Record<string, string>` | 组件与插件的映射关系 |
+| evttoplu | `Record<string, Record<string, ((...args: any[]) => Promise<void>)[]>>` | 事件与插件的映射关系 |
+| mdwtoplu | `Record<string, string>` | 中间件与插件的映射关系 |
+| plftoplu | `Record<string, string>` | 平台与插件的映射关系 |
 
 ## 方法
 
-### async loadConfig(configPath: string): Promise<void>
+### async loadConfig(configPath: string): `Promise<void>`
 
 加载框架配置文件。
 
@@ -71,7 +71,7 @@ export class Core {
 await core.loadConfig('./config.yml');
 ```
 
-### async getPluginConfig(pluginName: string): Promise<Config>
+### async getPluginConfig(pluginName: string): `Promise<Config>`
 
 获取指定插件的配置。
 
@@ -87,7 +87,7 @@ const config = await core.getPluginConfig('my-plugin');
 const apiKey = config.get('apiKey');
 ```
 
-### async loadPlugins(): Promise<void>
+### async loadPlugins(): `Promise<void>`
 
 加载所有配置中启用的插件。
 
@@ -113,7 +113,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 ```
 
-### async reloadPlugin(pluginName: string, core: Core): Promise<void>
+### async reloadPlugin(pluginName: string, core: Core): `Promise<void>`
 
 重新加载指定插件。
 
@@ -126,7 +126,7 @@ if (process.env.NODE_ENV === 'development') {
 await core.reloadPlugin('my-plugin', core);
 ```
 
-### async unloadPluginAndEmit(pluginName: string, core: Core): Promise<void>
+### async unloadPluginAndEmit(pluginName: string, core: Core): `Promise<void>`
 
 卸载指定插件并触发相关事件。
 
@@ -181,7 +181,7 @@ const db = core.getComponent('database');
 core.unregisterComponent('database');
 ```
 
-### on(event: string, listener: (...args: any[]) => Promise<void>): void
+### on(event: string, listener: `(...args: any[]) => Promise<void>`): void
 
 注册一个事件监听器。
 
@@ -197,7 +197,7 @@ core.on('plugin-loaded', async (pluginName) => {
 });
 ```
 
-### async emit(event: string, ...args: any[]): Promise<void>
+### async emit(event: string, ...args: any[]): `Promise<void>`
 
 触发一个事件。
 
@@ -252,7 +252,7 @@ core.command('hello')
   });
 ```
 
-### async executeCommand(name: string, session: any, ...args: any[]): Promise<Session | null>
+### async executeCommand(name: string, session: any, ...args: any[]): `Promise<Session | null>`
 
 执行指定命令。
 
@@ -334,4 +334,3 @@ async function bootstrap() {
 }
 
 bootstrap().catch(console.error);
-```
