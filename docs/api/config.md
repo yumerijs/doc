@@ -56,11 +56,11 @@ export class ConfigSchema {
 | required | boolean | 是否必需 |
 | enum | any[] | 枚举值列表（可选项） |
 | items | ConfigSchema | 数组项类型定义（当type为array时使用） |
-| properties | Record<string, ConfigSchema> | 对象属性定义（当type为object时使用） |
+| properties | `Record<string, ConfigSchema>` | 对象属性定义（当type为object时使用） |
 
 ### 静态方法
 
-#### static string(options?: Omit<ConfigSchema, 'type' | 'items' | 'properties'>): ConfigSchema
+#### static string(options?: `Omit<ConfigSchema, 'type' | 'items' | 'properties'>`): ConfigSchema
 
 创建字符串类型配置模式。
 
@@ -84,7 +84,7 @@ const colorSchema = ConfigSchema.string({
 });
 ```
 
-#### static number(options?: Omit<ConfigSchema, 'type' | 'items' | 'properties'>): ConfigSchema
+#### static number(options?: `Omit<ConfigSchema, 'type' | 'items' | 'properties'>`): ConfigSchema
 
 创建数字类型配置模式。
 
@@ -108,7 +108,7 @@ const levelSchema = ConfigSchema.number({
 });
 ```
 
-#### static boolean(options?: Omit<ConfigSchema, 'type' | 'items' | 'properties'>): ConfigSchema
+#### static boolean(options?: `Omit<ConfigSchema, 'type' | 'items' | 'properties'>`): ConfigSchema
 
 创建布尔类型配置模式。
 
@@ -131,7 +131,7 @@ const sslSchema = ConfigSchema.boolean({
 });
 ```
 
-#### static object(properties: Record<string, ConfigSchema>, options?: Omit<ConfigSchema, 'type' | 'items' | 'properties'>): ConfigSchema
+#### static object(properties: `Record<string, ConfigSchema>`, options?: `Omit<ConfigSchema, 'type' | 'items' | 'properties'>`): ConfigSchema
 
 创建对象类型配置模式。
 
@@ -153,7 +153,7 @@ const serverSchema = ConfigSchema.object({
 });
 ```
 
-#### static array(items: ConfigSchema, options?: Omit<ConfigSchema, 'type' | 'items' | 'properties'>): ConfigSchema
+#### static array(items: ConfigSchema, options?: `Omit<ConfigSchema, 'type' | 'items' | 'properties'>`): ConfigSchema
 
 创建数组类型配置模式。
 
@@ -209,12 +209,12 @@ export class Config {
 | 属性 | 类型 | 描述 |
 |------|------|------|
 | name | string | 配置名称 |
-| content | { [name: string]: any } | 配置内容 |
-| schema | Record<string, ConfigSchema> | 配置模式 |
+| content | `{ [name: string]: any }` | 配置内容 |
+| schema | `Record<string, ConfigSchema>` | 配置模式 |
 
 ### 方法
 
-#### get<T>(key: string, defaultValue?: T): T
+#### get`<T>`(key: string, defaultValue?: T): T
 
 获取配置项值。
 
@@ -418,4 +418,3 @@ export async function apply(ctx: Context, config: Config) {
   
   // 继续使用配置
 }
-```
