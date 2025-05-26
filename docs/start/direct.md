@@ -1,4 +1,4 @@
-# Yumeri 框架手动安装与启动指南
+# 手动安装
 
 > **重要提示**：Yumeri 框架正在快速迭代中，请随时参考 [官方仓库](https://github.com/yumerijs/yumeri) 获取最新信息。
 
