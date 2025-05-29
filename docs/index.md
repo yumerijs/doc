@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: 马上开始
-      link: /start
+      link: /start/install.html
 
 features:
   - icon: 🛠️
