@@ -309,8 +309,7 @@ export async function apply(ctx: Context, config: Config) {
 框架的标准启动流程如下：
 
 ```typescript
-import { Core } from 'yumerijs';
-import { PluginLoader } from './plugin-loader';
+import { Core, PluginLoader } from 'yumerijs';
 
 async function bootstrap() {
   // 创建插件加载器
@@ -324,11 +323,6 @@ async function bootstrap() {
   
   // 加载插件
   await core.loadPlugins();
-  
-  // 启动平台
-  for (const platform of core.platforms) {
-    await platform.startPlatform(core);
-  }
   
   console.log('Yumerijs 框架启动完成');
 }
