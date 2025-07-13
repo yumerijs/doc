@@ -4,13 +4,13 @@
 
 ## 创建一个插件
 
-在`plugins`文件夹下新建一个以"yumeri-plugin-"开头的文件夹，进入后使用`npm init`初始化node项目，然后在项目根使用`npm install yumeri`安装yumerijs及其依赖。
+在开发项目的根目录，执行yarn setup 插件名称，根据提示输入插件的描述，脚本将会自动创建好一个插件。打开 plugins目录，找到新建的插件，即可开始开发工作。
 
-打开yumeri开发项目的`config.yml`，在插件配置后面加上自己的插件，重启yumeri便可加载了。
+为了实时查看ts代码更新，请使用yarn dev来启动开发环境。
 
 ## 编写你的插件
 
-在插件的`src`目录下新建`index.ts`，在其中输入以下内容：
+在插件的`src`目录下找到`index.ts`，在其中输入以下内容：
 
 ```typescript
 import { Context, Config, Session } from 'yumeri';
@@ -36,7 +36,7 @@ export async function disable(ctx: Context) {
 
 ## 插件结构详解
 
-一个标准的Yumeri插件通常包含以下文件和目录：
+一个标准的Yumeri插件通常包含以下文件和目录（开发模式下）：
 
 ```
 yumeri-plugin-example/
