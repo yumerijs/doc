@@ -141,14 +141,22 @@ plugins:
 
 如果想直接引用默认配置，可删掉插件名下的所有配置项，但插件名和冒号必须保留。
 
-## 编写启动脚本
+## 启动方式一 使用启动器
+
+包yumeri中自带完整cli的启动脚本。如果你正在使用yarn，可直接通过yarn yumeri start启动；如果使用的是npm，可添加一个script指向yumeri start。
+
+> 非必要请勿使用-g选项全局安装cli，以免出现各种稀奇古怪的错误。
+
+## 启动方式二 编写启动脚本
+
+> 一般情况下，建议直接使用包内的script进行启动，除非要对启动过程进行定制化开发。
 
 ### JavaScript 版本 (start.js)
 
 ```javascript
 // 导入必要的模块
 const { Core } = require('yumeri');
-const PluginLoader = require('yumeri').PluginLoader;
+const PluginLoader = require('@yumerijs/loader');
 
 async function main() {
   // 创建插件加载器
@@ -188,7 +196,7 @@ main();
 ```typescript
 // 导入必要的模块
 import { Core } from 'yumeri';
-import PluginLoader from 'yumeri/dist/loader';
+import PluginLoader from '@yumerijs/loader';
 
 async function main() {
   // 创建插件加载器
