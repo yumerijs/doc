@@ -28,6 +28,7 @@ export class Route {
     match(pathname: string): { params: Record<string, string | undefined>; pathParams: string[] } | null;
     executeHandler(session: Session, params: URLSearchParams, pathParams: string[]): Promise<void>;
     methods(...methods: string[]): this;
+}
 ```
 
 ---
@@ -113,8 +114,7 @@ if (result) {
 ```
 
 ---
-
-### executeHandler(session: Session, params: URLSearchParams, pathParams: string[]): Promise<void>
+### executeHandler(session: Session, params: URLSearchParams, pathParams: string[]): `Promise<void>`
 
 执行路由绑定的处理器。
 
