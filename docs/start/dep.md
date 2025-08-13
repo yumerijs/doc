@@ -22,9 +22,9 @@ yarn add yumeri-plugin-server
 
 安装完成后，你就可以在你的 Node.js 项目中调用 Yumeri 框架了。以下是一个最简的示例：
 ```typescript
-import { Core, PluginLoader, Context, Config } from 'yumeri';
+import { Core, Loader, Context, Config } from 'yumeri';
 import * as server from 'yumeri-plugin-server';
-const loader = new PluginLoader()
+const loader = new Loader()
 const core = new Core(loader)
 const ctx = new Context(core, 'MyAPP')
 const serverconfig = new Config('server', {
@@ -43,9 +43,9 @@ server.apply(ctx, serverconfig)
 
 插件注册路由的方式一般是使用 ctx.route，如果作为组件调用，没有插件这种东西，该怎么办呢？很简单，别忘了在上述代码当中，我们为整个 APP 创建了一个名为 MyAPP 的 Context 上下文对象。通过它，我们就可以像编写插件一样注册路由：
 ```typescript
-import { Core, PluginLoader, Context, Config } from 'yumeri';
+import { Core, Loader, Context, Config } from 'yumeri';
 import * as server from 'yumeri-plugin-server';
-const loader = new PluginLoader()
+const loader = new Loader()
 const core = new Core(loader)
 const ctx = new Context(core, 'MyAPP')
 const serverconfig = new Config('server', {
