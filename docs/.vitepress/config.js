@@ -15,7 +15,8 @@ export default {
             text: '安装',
             items: [
               { text: '安装指南', link: '/start/install' },
-              { text: '手动安装', link: '/start/direct' }]
+              { text: '手动安装', link: '/start/direct' },
+              { text: '作为组件使用', link: '/start/dep' }]
           },{text: '使用',
           items: [
             { text: '开始之前', link: '/start/' },
