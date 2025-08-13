@@ -11,15 +11,45 @@ export class Core {
   public plugins: { [name: string]: Plugin & { depend?: string[]; provide?: string[] } };
   public config: any;
   public platforms: Platform[];
+  private eventListeners: { [event: string]: ((...args: any[]) => Promise<void>)[] };
   public components: { [name: string]: any };
   public commands: Record<string, Command>;
+  public routes: Record<string, Route>;
+  public pluginLoader: PluginLoader;
   public logger: Logger;
   public providedComponents: { [name: string]: string };
+  private pluginModules: { [name: string]: any };
+  private configPath: string;
+  private globalMiddlewares: Record<string, Middleware>;
+  /**
+   * @deprecated 命令与插件对应关系
+   */
   public cmdtoplu: Record<string, string>;
+  /**
+   * 路由与插件对应关系
+   */
+  public routetoplu: Record<string, string>;
+  /**
+   * 组件与插件对应关系
+   */
   public comtoplu: Record<string, string>;
+  /**
+   * 事件监听器与插件对应关系
+   */
   public evttoplu: Record<string, Record<string, ((...args: any[]) => Promise<void>)[]>>;
+  /**
+   * 中间件与插件对应关系
+   */
   public mdwtoplu: Record<string, string>;
   public plftoplu: Record<string, string>;
+  /**
+   * 插件状态
+   */
+  public pluginStatus: Record<string, PluginStatus>;
+  /**
+   * 插件监听器
+   */
+  private pluginWatchers: Record<string, chokidar.FSWatcher>;
 
   constructor(pluginLoader: PluginLoader);
   
@@ -37,6 +67,10 @@ export class Core {
   use(name: string, middleware: Middleware): Core;
   command(name: string): Command;
   async executeCommand(name: string, session: any, ...args: any[]): Promise<Session | null>;
+  registerPlatform(platform: Platform): any
+  async executeRoute(pathname: string, session: Session, queryParams: URLSearchParams): Promise<boolean>
+  unregall(pluginname: string): void
+  getRoute(path: string): Route | false
 }
 ```
 
@@ -48,10 +82,10 @@ export class Core {
 | config | any | 框架配置对象 |
 | platforms | Platform[] | 已注册的平台列表 |
 | components | `{ [name: string]: any }` | 已注册的组件集合 |
-| commands | `Record<string, Command>` | 已注册的命令集合 |
+| routes | `Record<string, Route>` | 已注册的路由集合 |
 | logger | Logger | 核心日志记录器 |
 | providedComponents | `{ [name: string]: string }` | 组件与提供该组件的插件映射 |
-| cmdtoplu | `Record<string, string>` | 命令与插件的映射关系 |
+| routetoplu | `Record<string, string>` | 路由与插件的映射关系 |
 | comtoplu | `Record<string, string>` | 组件与插件的映射关系 |
 | evttoplu | `Record<string, Record<string, ((...args: any[]) => Promise<void>)[]>>` | 事件与插件的映射关系 |
 | mdwtoplu | `Record<string, string>` | 中间件与插件的映射关系 |
@@ -232,42 +266,42 @@ core.use('logger', async (session, next) => {
 });
 ```
 
-### command(name: string): Command
+### route(name: string): Route
 
-创建或获取一个命令。
+创建一个路由。
 
 **参数：**
-- `name: string` - 命令名称
+- `name: string` - 路由名称
 
 **返回值：**
-- `Command` - 命令对象
+- `Route` - 路由对象
 
 **示例：**
 ```typescript
-// 注意：插件开发中推荐使用 ctx.command 而非直接调用此方法
-core.command('hello')
-  .action(async (session) => {
+// 注意：插件开发中推荐使用 ctx.route 而非直接调用此方法
+core.route('/hello')
+  .action(async (session, _) => {
     session.body = 'Hello, World!';
     session.setMime('text');
   });
 ```
 
-### async executeCommand(name: string, session: any, ...args: any[]): `Promise<Session | null>`
+### async executeRoute(pathname: string, session: any, queryParams: URLSearchParams): `Promise<boolean>`
 
-执行指定命令。
+执行指定路由。
 
 **参数：**
-- `name: string` - 命令名称
+- `pathname: string` - 匹配路径
 - `session: any` - 会话对象
-- `...args: any[]` - 命令参数
+- `queryParams: URLSearchParams` - 查询参数
 
 **返回值：**
-- `Promise<Session | null>` - 处理后的会话对象，如果命令不存在则返回 null
+- `Promise<boolean>` - 是否匹配成功
 
 **示例：**
 ```typescript
 const session = new Session('127.0.0.1', {}, platform);
-await core.executeCommand('hello', session);
+await core.executeRoute('hello', session);
 ```
 
 ## 内置事件
@@ -291,14 +325,14 @@ Core 提供了以下内置事件：
 // 不推荐
 export async function apply(ctx: Context, config: Config) {
   const core = ctx.getCore();
-  core.command('my-command').action(async (session) => {
+  core.route('/my-route').action(async (session, _) => {
     // ...
   });
 }
 
 // 推荐
 export async function apply(ctx: Context, config: Config) {
-  ctx.command('my-command').action(async (session) => {
+  ctx.route('/my-route').action(async (session, _) => {
     // ...
   });
 }

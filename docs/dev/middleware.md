@@ -4,7 +4,7 @@
 
 ## 中间件概述
 
-中间件是Yumeri框架中一个重要的概念，它允许开发者在请求处理流程中插入自定义逻辑。中间件可以在指令执行前后执行特定操作，例如日志记录、权限验证、数据转换等。
+中间件是Yumeri框架中一个重要的概念，它允许开发者在请求处理流程中插入自定义逻辑。中间件可以在路由执行前后执行特定操作，例如日志记录、权限验证、数据转换等。
 
 ## 中间件的工作原理
 
@@ -49,7 +49,7 @@ const logMiddleware: Middleware = async (session, next) => {
 
 ## 注册全局中间件
 
-使用`ctx.use()`方法注册全局中间件，它将应用于所有指令：
+使用`ctx.use()`方法注册全局中间件，它将应用于所有路由：
 
 ```typescript
 export async function apply(ctx: Context, config: Config) {
@@ -60,15 +60,15 @@ export async function apply(ctx: Context, config: Config) {
 }
 ```
 
-## 注册指令特定中间件
+## 注册路由特定中间件
 
-也可以为特定指令注册中间件：
+也可以为特定路由注册中间件：
 
 ```typescript
-ctx.command('secure')
+ctx.route('/secure')
   .use(authMiddleware)  // 先执行认证中间件
   .use(rateLimitMiddleware)  // 然后执行速率限制中间件
-  .action(async (session) => {
+  .action(async (session, _, _) => {
     // 指令处理逻辑
     session.body = 'Secure content';
     session.setMime('text');

@@ -20,7 +20,7 @@ export default {
           items: [
             { text: '开始之前', link: '/start/' },
             { text: '插件系统', link: '/start/plugin' },
-            { text: '指令系统', link: '/start/command' }
+            { text: '路由系统', link: '/start/route' }
           ]}]
         }
       ],
@@ -33,7 +33,7 @@ export default {
             {
               text: '核心模块',
               items: [
-                { text: '指令 (Command)', link: '/api/command' },
+                { text: '路由 (Route)', link: '/api/route' },
                 { text: '会话 (Session)', link: '/api/session' },
                 { text: '上下文 (Context)', link: '/api/context' },
                 { text: '配置 (Config)', link: '/api/config' },
@@ -59,7 +59,7 @@ export default {
           items: [
             { text: '总览', link: '/dev/' },
             { text: '插件基础', link: '/dev/plugin' },
-            { text: '指令开发', link: '/dev/command' },
+            { text: '路由开发', link: '/dev/route' },
             { text: '配置构型', link: '/dev/config' },
             { text: '中间件', link: '/dev/middleware' },
             { text: '事件监听', link: '/dev/event' }
@@ -73,6 +73,7 @@ export default {
       { text: "主页", link: "/" },
       { text: "开始", link: "/start/" },
       { text: "开发指南", link: "/dev/" },
+      { text: "插件", link: "/plugins/" },
       { text: "API参考", link: "/api/" },
       { text: "风梨团队", link: "//doc.flweb.cn" },
       { text: "鸣谢", link: "/structure/" },

@@ -17,8 +17,8 @@ import { Context, Config, Session } from 'yumeri';
 
 export async function apply(ctx: Context, config: Config) {
   // 加载插件时执行的操作
-  ctx.command('foo')
-    .action(async (session: Session, param?: any) => {
+  ctx.route('/foo')
+    .action(async (session: Session, _) => {
       session.setMime('text');
       session.body = `<h1>This is my plugin</h1>
 <h2>welcome!</h2>`;
@@ -73,8 +73,8 @@ export async function disable(ctx: Context): Promise<void> {
 
 ```typescript
 interface Context {
-  // 注册命令
-  command(name: string): Command;
+  // 注册路由
+  route(name: string): route;
   
   // 注册中间件
   use(middleware: Middleware): void;
@@ -118,19 +118,19 @@ interface Session {
 }
 ```
 
-## 注册命令
+## 注册路由
 
-命令是Yumeri插件的核心功能之一，用于处理特定的请求路径：
+路由是Yumeri插件的核心功能之一，用于处理特定的请求路径：
 
 ```typescript
-ctx.command('hello')
+ctx.route('/hello')
   .action(async (session: Session, param?: any) => {
     session.setMime('text');
     session.body = 'Hello, World!';
   });
 ```
 
-上面的代码注册了一个名为`hello`的命令，当访问`/hello`路径时，会返回"Hello, World!"。
+上面的代码注册了一个名为`hello`的路由，当访问`/hello`路径时，会返回"Hello, World!"。
 
 ## 插件开发最佳实践
 
@@ -150,17 +150,17 @@ import { Context, Config, Session } from 'yumeri';
 let counter = 0;
 
 export async function apply(ctx: Context, config: Config) {
-  // 注册增加计数的命令
-  ctx.command('counter-increment')
-    .action(async (session: Session) => {
+  // 注册增加计数的路由
+  ctx.route('/counter-increment')
+    .action(async (session: Session, param?: any) => {
       counter++;
       session.setMime('text');
       session.body = `Counter: ${counter}`;
     });
   
-  // 注册获取计数的命令
-  ctx.command('counter-get')
-    .action(async (session: Session) => {
+  // 注册获取计数的路由
+  ctx.route('/counter-get')
+    .action(async (session: Session, param?: any) => {
       session.setMime('text');
       session.body = `Current count: ${counter}`;
     });
@@ -172,6 +172,6 @@ export async function disable(ctx: Context) {
 }
 ```
 
-这个插件提供了两个命令：
+这个插件提供了两个路由：
 - `/counter-increment`：增加计数并返回当前值
 - `/counter-get`：获取当前计数值
