@@ -61,6 +61,7 @@ export default {
             { text: '总览', link: '/dev/' },
             { text: '插件基础', link: '/dev/plugin' },
             { text: '路由开发', link: '/dev/route' },
+            { text: '钩子', link: '/dev/hook' },
             { text: '配置构型', link: '/dev/config' },
             { text: '中间件', link: '/dev/middleware' },
             { text: '事件监听', link: '/dev/event' }
