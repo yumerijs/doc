@@ -24,7 +24,7 @@ yarn add yumeri-plugin-server
 ```typescript
 import { Core, Loader, Context, Config } from 'yumeri';
 import * as server from 'yumeri-plugin-server';
-const loader = new Loader()
+const loader = new Loader()  // 此时加载器并没有实际作用
 const core = new Core(loader)
 const ctx = new Context(core, 'MyAPP')
 const serverconfig = new Config('server', {
@@ -59,3 +59,42 @@ ctx.route('/hello')
 })
 ```
 写好代码并编译运行，打开监听地址/hello，浏览器就会显示“Hello, Yumeri!”，是不是很简单？
+
+## 启动多个服务器
+
+Yumeri 提供了一插件多开的功能，基于此，你可以实现同时开启多个应用实例。
+
+> 为防止串路由，建议同时开启多个 Core 实例
+
+```typescript
+import { Core, Loader, Context, Config } from 'yumeri';
+import * as server from 'yumeri-plugin-server';
+const loader = new Loader()
+// 第一个 Core 实例
+const core = new Core(loader)
+const ctx = new Context(core, 'MyAPP')
+const serverconfig = new Config('server', {
+    port: 8080,
+    host: '0.0.0.0'
+})
+server.apply(ctx, serverconfig)
+// 第二个 Core 实例
+const core2 = new Core(loader)
+const ctx2 = new Context(core2, 'MyAPP2')
+const serverconfig2 = new Config('server', {
+    port: 8081,
+    host: '0.0.0.0'
+})
+server.apply(ctx2, serverconfig2)
+// 第一个hello路由
+ctx.route('/hello')
+    .action(async (session, _) => {
+    session.body = 'Hello, Yumeri!'
+})
+// 第二个hello路由
+ctx2.route('/hello')
+    .action(async (session, _) => {
+    session.body = 'Hello, Yumeri2!'
+})
+```
+此时访问两个监听地址，浏览器会分别显示“Hello, Yumeri!”和“Hello, Yumeri2!”
