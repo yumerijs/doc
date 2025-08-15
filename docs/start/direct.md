@@ -24,8 +24,8 @@
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
 # 安装 Node.js
-nvm install 18
-nvm use 18
+nvm install 22
+nvm use 22
 ```
 
 ## 方案一：直接安装 npm 包
@@ -53,9 +53,6 @@ npm install yumeri
 ### 安装基础插件
 
 ```bash
-# 安装服务器插件（可选但几乎是底层依赖）
-npm install yumeri-plugin-server
-
 # 安装控制台插件（可选但推荐）
 npm install yumeri-plugin-console
 ```
@@ -126,12 +123,11 @@ touch config.yml
 
 ```yaml
 # 基本配置
+core:
+  port: 14510
+  host: 0.0.0.0
+# 插件配置
 plugins:
-  # 服务器插件（可选但几乎是底层依赖）
-  yumeri-plugin-server:
-    port: 14510
-    host: 0.0.0.0
-  
   # 控制台插件（可选但推荐）
   yumeri-plugin-console:
     path: console
@@ -139,7 +135,7 @@ plugins:
     adminpassword: admin
 ```
 
-如果想直接引用默认配置，可删掉插件名下的所有配置项，但插件名和冒号必须保留。
+如果想直接引用插件默认配置，可删掉插件名下的所有配置项，但插件名和冒号必须保留。
 
 ## 启动方式一 使用启动器
 
@@ -163,7 +159,11 @@ async function main() {
   const loader = new PluginLoader();
   
   // 创建核心实例
-  const core = new Core(loader);
+  const serverconfig = {
+    port: 8080,
+    host: '0.0.0.0'
+  }
+  const core = new Core(loader, serverconfig)
 
   try {
     // 加载配置文件
@@ -171,6 +171,9 @@ async function main() {
     
     // 加载插件
     await core.loadPlugins();
+
+    // 启动核心
+    await core.runCore();
     
     console.log('Yumeri 框架已成功启动！');
     
@@ -203,7 +206,11 @@ async function main() {
   const loader = new PluginLoader();
   
   // 创建核心实例
-  const core = new Core(loader);
+  const serverconfig = {
+    port: 8080,
+    host: '0.0.0.0'
+  }
+  const core: Core = new Core(loader, serverconfig)
 
   try {
     // 加载配置文件
@@ -211,6 +218,8 @@ async function main() {
     
     // 加载插件
     await core.loadPlugins();
+    // 启动核心
+    await core.runCore();
     
     console.log('Yumeri 框架已成功启动！');
     
@@ -319,5 +328,5 @@ npm config set registry https://registry.npmmirror.com
 **问题**: 启动时报告端口已被占用。
 
 **解决方案**:
-- 在 `config.yml` 中修改 `yumeri-plugin-server` 的端口配置
+- 在 `config.yml` 中修改 Core 的端口配置
 - 使用 `lsof -i :端口号` 或 `netstat -ano | findstr 端口号` 找出占用端口的进程并关闭

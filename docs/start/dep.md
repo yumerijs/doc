@@ -11,12 +11,6 @@ npm install yumeri
 # or
 yarn add yumeri
 ```
-要让框架正常工作，server 插件是少不了的：
-```bash
-npm install yumeri-plugin-server
-# or
-yarn add yumeri-plugin-server
-```
 
 ## 调用
 
@@ -25,13 +19,13 @@ yarn add yumeri-plugin-server
 import { Core, Loader, Context, Config } from 'yumeri';
 import * as server from 'yumeri-plugin-server';
 const loader = new Loader()  // 此时加载器并没有实际作用
-const core = new Core(loader)
-const ctx = new Context(core, 'MyAPP')
-const serverconfig = new Config('server', {
+const serverconfig = {
     port: 8080,
     host: '0.0.0.0'
-})
-server.apply(ctx, serverconfig)
+}
+const core = new Core(loader, serverconfig)
+const ctx = new Context(core, 'MyAPP')
+core.runCore()
 ```
 不出所料，你的日志应该会输出这样的一行：
 ```bash
@@ -46,13 +40,13 @@ server.apply(ctx, serverconfig)
 import { Core, Loader, Context, Config } from 'yumeri';
 import * as server from 'yumeri-plugin-server';
 const loader = new Loader()
-const core = new Core(loader)
-const ctx = new Context(core, 'MyAPP')
-const serverconfig = new Config('server', {
+const serverconfig = {
     port: 8080,
     host: '0.0.0.0'
-})
-server.apply(ctx, serverconfig)
+}
+const core = new Core(loader, serverconfig)
+const ctx = new Context(core, 'MyAPP')
+core.runCore()
 ctx.route('/hello')
     .action(async (session, _) => {
     session.body = 'Hello, Yumeri!'
@@ -71,21 +65,22 @@ import { Core, Loader, Context, Config } from 'yumeri';
 import * as server from 'yumeri-plugin-server';
 const loader = new Loader()
 // 第一个 Core 实例
-const core = new Core(loader)
-const ctx = new Context(core, 'MyAPP')
-const serverconfig = new Config('server', {
+const serverconfig = {
     port: 8080,
     host: '0.0.0.0'
-})
-server.apply(ctx, serverconfig)
+}
+const core = new Core(loader, serverconfig)
+const ctx = new Context(core, 'MyAPP')
+let count = 0
+core.runCore()
 // 第二个 Core 实例
-const core2 = new Core(loader)
-const ctx2 = new Context(core2, 'MyAPP2')
-const serverconfig2 = new Config('server', {
+const serverconfig2 = {
     port: 8081,
     host: '0.0.0.0'
-})
-server.apply(ctx2, serverconfig2)
+}
+const core2 = new Core(loader, serverconfig2)
+const ctx2 = new Context(core2, 'MyAPP2')
+core2.runCore()
 // 第一个hello路由
 ctx.route('/hello')
     .action(async (session, _) => {

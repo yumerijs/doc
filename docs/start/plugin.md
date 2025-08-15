@@ -8,7 +8,7 @@
 
 ## 插件的定义
 
-插件的默认形式是npm包，包名前缀为`yumeri-plugin-`，用于识别此为Yumeri的插件。例如，`yumeri-plugin-server`是Yumeri的服务器插件。
+插件的默认形式是npm包，包名前缀为`yumeri-plugin-`，用于识别此为Yumeri的插件。例如，`yumeri-plugin-console`是Yumeri的控制台插件。
 
 ## 内置插件
 
@@ -16,7 +16,6 @@ Yumeri框架自带了几个基础插件：
 
 1. **yumeri-plugin-console**：控制台插件，提供日志和调试功能
 2. **yumeri-plugin-echo**：回显插件，用于测试和演示
-3. **yumeri-plugin-server**：服务器插件，提供Web服务器功能
 
 ## 插件的使用
 
@@ -29,9 +28,8 @@ Yumeri框架自带了几个基础插件：
 ```yaml
 plugins:
   yumeri-plugin-console:
-  yumeri-plugin-server:
     value1: 123
-  my-custom-plugin  # 自定义插件
+  my-custom-plugin:  # 自定义插件
 ```
 
 ### 插件加载顺序
