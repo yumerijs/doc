@@ -5,6 +5,7 @@ export default defineConfig({
     ['link', { rel: 'icon', href: 'https://api.flweb.cn/doc/image/bot.jpg' }],
   ],
   lastUpdated: true,
+  ignoreDeadLinks: true,
   locales: {
     root: {
       label: '简体中文',
