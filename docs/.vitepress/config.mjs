@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   head: [
-    ['link', { rel: 'icon', href: 'https://api.flweb.cn/doc/image/bot.jpg' }],
+    ['link', { rel: 'icon', href: 'https://api.flweb.cn/logos/yumeri/circle.png' }],
   ],
   lastUpdated: true,
   ignoreDeadLinks: true,
@@ -177,7 +177,7 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    logo: "https://api.flweb.cn/doc/image/bot.jpg",
+    logo: "https://api.flweb.cn/logos/yumeri/circle.png",
     socialLinks: [
       { icon: "github", link: "https://github.com/yumerijs" },
     ],
