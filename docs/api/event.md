@@ -41,7 +41,7 @@ await ctx.emit('myplygin:onload', { version: '1.0.0' }, 'extra-info');
 | 参数名 | 类型 | 描述 |
 |--------|------|------|
 | event | string | 事件名称 |
-| listener | (...args: any[]) => Promise<void> | 事件处理函数，接收触发时的所有参数 |
+| listener | (...args: any[]) => Promise&lt;void&gt; | 事件处理函数，接收触发时的所有参数 |
 
 **示例：**
 ```ts
