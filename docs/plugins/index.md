@@ -1,4 +1,5 @@
----
-layout: PluginMarketLayout
-title: 插件市场
----
+# 插件市场
+
+<ClientOnly>
+<PluginMarket />
+</ClientOnly>
