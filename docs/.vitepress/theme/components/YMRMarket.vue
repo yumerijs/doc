@@ -55,6 +55,7 @@ const nextPage = () => {
 
 <template>
   <div class="yumeri-market-container px-4 py-6">
+    <!-- 搜索框 -->
     <div class="flex justify-center mb-6">
       <input
         v-model="search"
@@ -64,40 +65,44 @@ const nextPage = () => {
       />
     </div>
 
+    <!-- 加载/错误状态 -->
     <div v-if="loading" class="text-center text-gray-500">正在加载插件列表...</div>
     <div v-else-if="error" class="text-center text-red-500">加载失败：{{ error }}</div>
 
+    <!-- 插件列表 -->
     <div v-else>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="plugin in paginatedPlugins"
-          :key="plugin.name"
-          class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-md hover:shadow-xl transition-all duration-200 cursor-pointer"
-          @click="goToNpm(plugin.name)"
-        >
-          <h3 class="font-semibold text-lg text-blue-600 dark:text-blue-300 mb-2">
-            {{ plugin.name }}
-          </h3>
-          <p class="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">
-            {{ plugin.description || '暂无描述' }}
-          </p>
-          <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-            <span class="block">作者：{{ plugin.author }}</span>
-            <span class="block">更新：{{ plugin.updatedAt }}</span>
-            <span class="block">体积：{{ plugin.unpackedSize }}</span>
-          </div>
-          <div class="flex flex-wrap gap-2 mt-2">
-            <span
-              v-for="k in plugin.keywords"
-              :key="k"
-              class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded"
-            >
-              #{{ k }}
-            </span>
+        <div v-for="plugin in paginatedPlugins" :key="plugin.name">
+          <!-- 卡片容器 -->
+          <div
+            class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+            @click="goToNpm(plugin.name)"
+          >
+            <h3 class="font-semibold text-lg text-blue-600 dark:text-blue-300 mb-2">
+              {{ plugin.name }}
+            </h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">
+              {{ plugin.description || '暂无描述' }}
+            </p>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+              <span class="block">作者：{{ plugin.author }}</span>
+              <span class="block">更新：{{ plugin.updatedAt }}</span>
+              <span class="block">体积：{{ plugin.unpackedSize }}</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-2">
+              <span
+                v-for="k in plugin.keywords"
+                :key="k"
+                class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded"
+              >
+                #{{ k }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- 分页 -->
       <div class="flex justify-center gap-2 mt-6">
         <button
           @click="prevPage"
