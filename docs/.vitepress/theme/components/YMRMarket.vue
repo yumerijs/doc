@@ -1,3 +1,5 @@
+# 插件市场
+
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 
@@ -29,7 +31,7 @@ const filteredPlugins = computed(() => {
   return plugins.value.filter(p =>
     p.name.toLowerCase().includes(keyword) ||
     p.description?.toLowerCase().includes(keyword) ||
-    p.keywords?.some((k: string) => k.toLowerCase().includes(keyword))
+    (p.keywords?.some(k => k.toLowerCase().includes(keyword)) || false)
   )
 })
 
@@ -54,7 +56,12 @@ const nextPage = () => {
 </script>
 
 <template>
-  <div class="yumeri-market-container px-4 py-6">
+  <div class="w-full max-w-7xl mx-auto px-4 py-6">
+    <!-- 插件总数 -->
+    <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+      当前一共有 {{ plugins.length }} 个 Yumeri 插件
+    </p>
+
     <!-- 搜索框 -->
     <div class="flex justify-center mb-6">
       <input
@@ -65,7 +72,7 @@ const nextPage = () => {
       />
     </div>
 
-    <!-- 加载/错误状态 -->
+    <!-- 加载 / 错误 -->
     <div v-if="loading" class="text-center text-gray-500">正在加载插件列表...</div>
     <div v-else-if="error" class="text-center text-red-500">加载失败：{{ error }}</div>
 
@@ -73,7 +80,6 @@ const nextPage = () => {
     <div v-else>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div v-for="plugin in paginatedPlugins" :key="plugin.name">
-          <!-- 卡片容器 -->
           <div
             class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer"
             @click="goToNpm(plugin.name)"
@@ -124,7 +130,7 @@ const nextPage = () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
