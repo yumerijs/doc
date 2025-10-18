@@ -1,3 +1,4 @@
-# 插件市场
-
-<PluginMarket />
+---
+layout: PluginMarketLayout
+title: 插件市场
+---
