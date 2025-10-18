@@ -8,7 +8,7 @@
 
 ## 方法
 
-### ctx.emit(event: string, ...args: any[]): Promise<void>
+### ctx.emit(event: string, ...args: any[]): Promise&lt;void&gt;
 触发一个事件。  
 该方法会异步调用所有通过 `ctx.on()` 注册的对应事件监听器。
 
@@ -32,7 +32,7 @@ await ctx.emit('myplygin:onload', { version: '1.0.0' }, 'extra-info');
 
 ---
 
-### ctx.on(event: string, listener: (...args: any[]) => Promise<void>): void
+### ctx.on(event: string, listener: (...args: any[]) => Promise&lt;void&gt;): void
 注册事件监听器。  
 同一事件可被多个插件监听，触发时会依次调用所有监听器。
 
