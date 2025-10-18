@@ -72,25 +72,25 @@ const nextPage = () => {
         <div
           v-for="plugin in paginatedPlugins"
           :key="plugin.name"
-          class="border rounded-xl p-4 shadow hover:shadow-lg transition-all duration-200 cursor-pointer bg-white dark:bg-gray-800 dark:border-gray-700"
+          class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-md hover:shadow-xl transition-all duration-200 cursor-pointer"
           @click="goToNpm(plugin.name)"
         >
-          <h3 class="font-semibold text-lg text-blue-600 dark:text-blue-300 mb-1">
+          <h3 class="font-semibold text-lg text-blue-600 dark:text-blue-300 mb-2">
             {{ plugin.name }}
           </h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
+          <p class="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">
             {{ plugin.description || '暂无描述' }}
           </p>
-          <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+          <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
             <span class="block">作者：{{ plugin.author }}</span>
             <span class="block">更新：{{ plugin.updatedAt }}</span>
             <span class="block">体积：{{ plugin.unpackedSize }}</span>
           </div>
-          <div class="flex flex-wrap gap-1 mt-2">
+          <div class="flex flex-wrap gap-2 mt-2">
             <span
               v-for="k in plugin.keywords"
               :key="k"
-              class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded"
+              class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded"
             >
               #{{ k }}
             </span>
@@ -102,7 +102,7 @@ const nextPage = () => {
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
-          class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
+          class="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700 disabled:opacity-50"
         >
           上一页
         </button>
@@ -110,7 +110,7 @@ const nextPage = () => {
         <button
           @click="nextPage"
           :disabled="currentPage === totalPages"
-          class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
+          class="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700 disabled:opacity-50"
         >
           下一页
         </button>
