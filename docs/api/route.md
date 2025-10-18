@@ -120,7 +120,7 @@ if (result) logger.info(result.params.id); // => 42
 
 ---
 
-### executeHandler(session: Session, params: URLSearchParams, pathParams: string[]): Promise<void>
+### executeHandler(session: Session, params: URLSearchParams, pathParams: string[]): Promise&lt;void&gt;
 执行路由绑定的处理函数。
 
 **参数：**
