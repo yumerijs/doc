@@ -5,7 +5,7 @@
 
 ## 接口定义：`Database`
 
-### `extend&lt;K extends keyof Tables&gt;(table: K, schema: Schema&lt;Partial&lt;Tables[K]&gt;&gt;, indexes?: IndexDefinition&lt;Tables[K]&gt;): Promise&lt;void&gt;`
+### extend&lt;K extends keyof Tables&gt;(table: K, schema: Schema&lt;Partial&lt;Tables[K]&gt;&gt;, indexes?: IndexDefinition&lt;Tables[K]&gt;): Promise&lt;void&gt;
 扩展或创建表结构。
 
 - 参数：
@@ -14,7 +14,7 @@
   - indexes?: 索引定义（主键、唯一键、外键等）
 - 返回：无
 
-### `create&lt;K extends keyof Tables&gt;(table: K, data: Partial&lt;Tables[K]&gt;): Promise&lt;Tables[K]&gt;`
+### create&lt;K extends keyof Tables&gt;(table: K, data: Partial&lt;Tables[K]&gt;): Promise&lt;Tables[K]&gt;
 在表中插入一条新记录。
 
 - 参数：
@@ -22,7 +22,7 @@
   - data: 插入数据对象
 - 返回：插入后的完整记录
 
-### `select&lt;K extends keyof Tables, F extends keyof Tables[K]&gt;(table: K, query: Query&lt;Tables[K]&gt;, fields?: F[]): Promise&lt;Pick&lt;Tables[K], F&gt;&gt;[]`
+### select&lt;K extends keyof Tables, F extends keyof Tables[K]&gt;(table: K, query: Query&lt;Tables[K]&gt;, fields?: F[]): Promise&lt;Pick&lt;Tables[K], F&gt;&gt;[]
 查询多条记录，可选择字段。
 
 - 参数：
@@ -31,13 +31,13 @@
   - fields?: 返回字段列表
 - 返回：符合条件的记录数组
 
-### `selectOne&lt;K extends keyof Tables, F extends keyof Tables[K]&gt;(table: K, query: Query&lt;Tables[K]&gt;, fields?: F[]): Promise&lt;Pick&lt;Tables[K], F&gt; | undefined&gt;`
+### selectOne&lt;K extends keyof Tables, F extends keyof Tables[K]&gt;(table: K, query: Query&lt;Tables[K]&gt;, fields?: F[]): Promise&lt;Pick&lt;Tables[K], F&gt; | undefined&gt;
 查询符合条件的第一条记录。
 
 - 参数同 select
 - 返回：单条记录或 undefined
 
-### `update&lt;K extends keyof Tables&gt;(table: K, query: Query&lt;Tables[K]&gt;, data: UpdateData&lt;Partial&lt;Tables[K]&gt;&gt;): Promise&lt;number&gt;`
+### update&lt;K extends keyof Tables&gt;(table: K, query: Query&lt;Tables[K]&gt;, data: UpdateData&lt;Partial&lt;Tables[K]&gt;&gt;): Promise&lt;number&gt;
 更新符合条件的记录。
 
 - 参数：
@@ -46,7 +46,7 @@
   - data: 更新数据（支持 $inc 操作）
 - 返回：受影响的记录数量
 
-### `remove&lt;K extends keyof Tables&gt;(table: K, query: Query&lt;Tables[K]&gt;): Promise&lt;number&gt;`
+### remove&lt;K extends keyof Tables&gt;(table: K, query: Query&lt;Tables[K]&gt;): Promise&lt;number&gt;
 删除符合条件的记录。
 
 - 参数：
@@ -54,7 +54,7 @@
   - query: 查询条件
 - 返回：删除的记录数量
 
-### `upsert&lt;K extends keyof Tables&gt;(table: K, data: Partial&lt;Tables[K]&gt;[], key: keyof Tables[K] | (keyof Tables[K])[], update?: UpdateData&lt;Partial&lt;Tables[K]&gt;&gt;): Promise&lt;void&gt;`
+### upsert&lt;K extends keyof Tables&gt;(table: K, data: Partial&lt;Tables[K]&gt;[], key: keyof Tables[K] | (keyof Tables[K])[], update?: UpdateData&lt;Partial&lt;Tables[K]&gt;&gt;): Promise&lt;void&gt;
 插入或更新记录（冲突时按指定 key 更新）。
 
 - 参数：
@@ -64,7 +64,7 @@
   - update?: 冲突时更新字段（不提供则用 data 更新）
 - 返回：无
 
-### `drop&lt;K extends keyof Tables&gt;(table: K): Promise&lt;void&gt;`
+### drop&lt;K extends keyof Tables&gt;(table: K): Promise&lt;void&gt;
 删除表。
 
 - 参数：
