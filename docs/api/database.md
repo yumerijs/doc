@@ -107,12 +107,12 @@ export interface FieldDefinition {
 
 Schema&lt;T&gt;
 ```ts
-export type Schema&lt;T&gt; = { [K in keyof T]?: FieldType | FieldDefinition } & { [key: string]: FieldType | FieldDefinition };
+export type Schema<T> = { [K in keyof T]?: FieldType | FieldDefinition } & { [key: string]: FieldType | FieldDefinition };
 ```
 
 IndexDefinition&lt;T&gt;
 ```ts
-export interface IndexDefinition&lt;T&gt; {
+export interface IndexDefinition<T> {
   primary?: keyof T | (keyof T)[];
   autoInc?: boolean;
   unique?: (keyof T | (keyof T)[])[];
@@ -122,22 +122,22 @@ export interface IndexDefinition&lt;T&gt; {
 
 Query&lt;T&gt;
 ```ts
-export type Query&lt;T = any&gt; = {
-  [K in keyof T]?: T[K] | Operator&lt;T[K]&gt;;
+export type Query<T> = any = {
+  [K in keyof T]?: T[K] | Operator<T>[K];
 } & {
-  $or?: Query&lt;T&gt;[];
-  $and?: Query&lt;T&gt;[];
+  $or?: Query<T>[];
+  $and?: Query<T>[];
 };
 ```
 
 UpdateData&lt;T&gt;
 ```ts
-export type UpdateData&lt;T&gt; = { [K in keyof T]?: T[K] | { $inc: number } };
+export type UpdateData<T> = { [K in keyof T]?: T[K] | { $inc: number } };
 ```
 
 Operator&lt;T&gt;
 ```ts
-export interface Operator&lt;T&gt; {
+export interface Operator<T> {
   $eq?: T;
   $ne?: T;
   $gt?: T;
