@@ -74,6 +74,26 @@ export default defineConfig({
               ]
             }
           ],
+
+          '/plugins/': [
+            {
+              text: '插件列表',
+              items: [
+                { text: '总览', link: '/plugins/' },
+                { text: 'analyse', link: '/plugins/analyse' },
+                { text: 'authority', link: '/plugins/authority' },
+                { text: 'files', link: '/plugins/files' },
+                { text: 'logger', link: '/plugins/logger' },
+                { text: 'market', link: '/plugins/market' },
+                { text: 'pages', link: '/plugins/pages' },
+                { text: 'permission', link: '/plugins/permission' },
+                { text: 'proxy-agent', link: '/plugins/proxy-agent' },
+                { text: 'tinytools', link: '/plugins/tinytools' },
+                { text: 'user', link: '/plugins/user' },
+              ]
+            }
+          ],
+
           '/dev/': [
             {
               text: '开发指南',
@@ -158,6 +178,26 @@ export default defineConfig({
               ]
             }
           ],
+
+          '/en/plugins/': [
+            {
+              text: 'Plugin List',
+              items: [
+                { text: 'Overview', link: '/en/plugins/' },
+                { text: 'analyse', link: '/en/plugins/analyse' },
+                { text: 'authority', link: '/en/plugins/authority' },
+                { text: 'files', link: '/en/plugins/files' },
+                { text: 'logger', link: '/en/plugins/logger' },
+                { text: 'market', link: '/en/plugins/market' },
+                { text: 'pages', link: '/en/plugins/pages' },
+                { text: 'permission', link: '/en/plugins/permission' },
+                { text: 'proxy-agent', link: '/en/plugins/proxy-agent' },
+                { text: 'tinytools', link: '/en/plugins/tinytools' },
+                { text: 'user', link: '/en/plugins/user' },
+              ]
+            }
+          ],
+
           '/en/dev/': [
             {
               text: 'Development Guide',
