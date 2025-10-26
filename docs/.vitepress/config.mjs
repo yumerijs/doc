@@ -19,9 +19,14 @@ export default defineConfig({
         nav: [
           { text: "主页", link: "/" },
           { text: "开始", link: "/start/" },
-          { text: "开发指南", link: "/dev/" },
-          { text: "插件", link: "/plugins/" },
-          { text: "API参考", link: "/api/" },
+          {
+            text: "开发",
+            items: [
+              { text: "开发指南", link: "/dev/" },
+              { text: "插件", link: "/plugins/" },
+              { text: "API参考", link: "/api/" },
+            ]
+          },
           { text: "风梨团队", link: "//doc.flweb.cn" },
           { text: "鸣谢", link: "/structure/" },
         ],
@@ -123,9 +128,14 @@ export default defineConfig({
         nav: [
           { text: "Home", link: "/en/" },
           { text: "Getting Started", link: "/en/start/" },
-          { text: "Development Guide", link: "/en/dev/" },
-          { text: "Plugins", link: "/en/plugins/" },
-          { text: "API Reference", link: "/en/api/" },
+          {
+            text: "Development",
+            items: [
+              { text: "Development Guide", link: "/en/dev/" },
+              { text: "Plugins", link: "/en/plugins/" },
+              { text: "API Reference", link: "/en/api/" },
+            ]
+          },
           { text: "WindyPear Team", link: "//doc.flweb.cn" },
           { text: "Acknowledgements", link: "/en/structure/" },
         ],
