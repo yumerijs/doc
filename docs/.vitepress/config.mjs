@@ -79,17 +79,17 @@ export default defineConfig({
             {
               text: '插件列表',
               items: [
-                { text: '总览', link: '/plugins/' },
-                { text: 'analyse', link: '/plugins/analyse' },
-                { text: 'authority', link: '/plugins/authority' },
-                { text: 'files', link: '/plugins/files' },
-                { text: 'logger', link: '/plugins/logger' },
-                { text: 'market', link: '/plugins/market' },
-                { text: 'pages', link: '/plugins/pages' },
-                { text: 'permission', link: '/plugins/permission' },
-                { text: 'proxy-agent', link: '/plugins/proxy-agent' },
-                { text: 'tinytools', link: '/plugins/tinytools' },
-                { text: 'user', link: '/plugins/user' },
+                { text: '插件市场', link: '/plugins/' },
+                { text: '数据统计', link: '/plugins/analyse' },
+                { text: '用户登录', link: '/plugins/authority' },
+                { text: '文件管理', link: '/plugins/files' },
+                { text: '控制台日志', link: '/plugins/logger' },
+                { text: '插件商店', link: '/plugins/market' },
+                { text: '页面模型', link: '/plugins/pages' },
+                { text: '权限模型', link: '/plugins/permission' },
+                { text: '全局代理', link: '/plugins/proxy-agent' },
+                { text: '前端小工具合集', link: '/plugins/tinytools' },
+                { text: '用户模型', link: '/plugins/user' },
               ]
             }
           ],
