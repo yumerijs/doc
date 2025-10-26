@@ -49,3 +49,13 @@ interface Pages {
     comment_status: string;
 }
 ```
+
+## Pagesmeta 模型定义
+```typescript
+interface Pagesmeta {
+    id: number;
+    page_id: number;
+    meta_key: string;
+    meta_value: string;
+}
+```
