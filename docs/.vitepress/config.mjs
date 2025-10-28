@@ -29,7 +29,6 @@ export default defineConfig({
           },
           { text: "风梨团队", link: "//doc.flweb.cn" },
           { text: "鸣谢", link: "/structure/" },
-          { text: "v2", link: "https://v2.yumeri.dev/" },
         ],
         sidebar: {
           '/start/': [
@@ -140,7 +139,6 @@ export default defineConfig({
           },
           { text: "WindyPear Team", link: "//doc.flweb.cn" },
           { text: "Acknowledgements", link: "/en/structure/" },
-          { text: "v2", link: "https://v2.yumeri.dev/" },
         ],
         sidebar: {
           '/en/start/': [
