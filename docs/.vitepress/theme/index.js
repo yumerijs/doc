@@ -3,6 +3,7 @@ import './style/var.css'
 import './style/fonts.css'
 import Layout from './Layout.vue'
 import VPHome from './components/VPHome.vue'
+import PluginMarket from './components/YMRMarket.vue'
 
 export default {
   extends: DefaultTheme,
@@ -10,5 +11,6 @@ export default {
     // 注册全局组件
     app.component('VPHome' , VPHome)
     app.component('Layout' , Layout)
+    app.component('PluginMarket', PluginMarket)
   },
 }

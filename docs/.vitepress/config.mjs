@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   head: [
-    ['link', { rel: 'icon', href: 'https://api.flweb.cn/doc/image/bot.jpg' }],
+    ['link', { rel: 'icon', href: 'https://api.flweb.cn/logos/yumeri/circle.png' }],
   ],
   lastUpdated: true,
   ignoreDeadLinks: true,
@@ -19,9 +19,14 @@ export default defineConfig({
         nav: [
           { text: "主页", link: "/" },
           { text: "开始", link: "/start/" },
-          { text: "开发指南", link: "/dev/" },
-          { text: "插件", link: "/plugins/" },
-          { text: "API参考", link: "/api/" },
+          {
+            text: "开发",
+            items: [
+              { text: "开发指南", link: "/dev/" },
+              { text: "插件", link: "/plugins/" },
+              { text: "API参考", link: "/api/" },
+            ]
+          },
           { text: "风梨团队", link: "//doc.flweb.cn" },
           { text: "鸣谢", link: "/structure/" },
           { text: "v2", link: "https://v2.yumeri.dev/" },
@@ -60,7 +65,8 @@ export default defineConfig({
                     { text: '上下文 (Context)', link: '/api/context' },
                     { text: '配置 (Config)', link: '/api/config' },
                     { text: '平台 (Platform)', link: '/api/platform' },
-                    { text: '日志 (Logger)', link: '/api/logger' }
+                    { text: '日志 (Logger)', link: '/api/logger' },
+                    { text: '国际化 (I18n)', link: '/api/i18n' }
                   ]
                 },
                 {
@@ -75,6 +81,26 @@ export default defineConfig({
               ]
             }
           ],
+
+          '/plugins/': [
+            {
+              text: '插件列表',
+              items: [
+                { text: '插件市场', link: '/plugins/' },
+                { text: '数据统计', link: '/plugins/analyse' },
+                { text: '用户登录', link: '/plugins/authority' },
+                { text: '文件管理', link: '/plugins/files' },
+                { text: '控制台日志', link: '/plugins/logger' },
+                { text: '插件商店', link: '/plugins/market' },
+                { text: '页面模型', link: '/plugins/pages' },
+                { text: '权限模型', link: '/plugins/permission' },
+                { text: '全局代理', link: '/plugins/proxy-agent' },
+                { text: '前端小工具合集', link: '/plugins/tinytools' },
+                { text: '用户模型', link: '/plugins/user' },
+              ]
+            }
+          ],
+
           '/dev/': [
             {
               text: '开发指南',
@@ -104,9 +130,14 @@ export default defineConfig({
         nav: [
           { text: "Home", link: "/en/" },
           { text: "Getting Started", link: "/en/start/" },
-          { text: "Development Guide", link: "/en/dev/" },
-          { text: "Plugins", link: "/en/plugins/" },
-          { text: "API Reference", link: "/en/api/" },
+          {
+            text: "Development",
+            items: [
+              { text: "Development Guide", link: "/en/dev/" },
+              { text: "Plugins", link: "/en/plugins/" },
+              { text: "API Reference", link: "/en/api/" },
+            ]
+          },
           { text: "WindyPear Team", link: "//doc.flweb.cn" },
           { text: "Acknowledgements", link: "/en/structure/" },
           { text: "v2", link: "https://v2.yumeri.dev/" },
@@ -160,6 +191,26 @@ export default defineConfig({
               ]
             }
           ],
+
+          '/en/plugins/': [
+            {
+              text: 'Plugin List',
+              items: [
+                { text: 'Overview', link: '/en/plugins/' },
+                { text: 'analyse', link: '/en/plugins/analyse' },
+                { text: 'authority', link: '/en/plugins/authority' },
+                { text: 'files', link: '/en/plugins/files' },
+                { text: 'logger', link: '/en/plugins/logger' },
+                { text: 'market', link: '/en/plugins/market' },
+                { text: 'pages', link: '/en/plugins/pages' },
+                { text: 'permission', link: '/en/plugins/permission' },
+                { text: 'proxy-agent', link: '/en/plugins/proxy-agent' },
+                { text: 'tinytools', link: '/en/plugins/tinytools' },
+                { text: 'user', link: '/en/plugins/user' },
+              ]
+            }
+          ],
+
           '/en/dev/': [
             {
               text: 'Development Guide',
@@ -179,7 +230,7 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    logo: "https://api.flweb.cn/doc/image/bot.jpg",
+    logo: "https://api.flweb.cn/logos/yumeri/circle.png",
     socialLinks: [
       { icon: "github", link: "https://github.com/yumerijs" },
     ],

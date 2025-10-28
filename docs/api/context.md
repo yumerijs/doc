@@ -184,6 +184,15 @@ ctx.registerComponent('my-service', {
 
 ---
 
+### fork(name: string): Context
+
+注册子 Context 并返回
+
+**参数：**
+- `name: string` - 子 Context 的插件名称
+
+---
+
 ## 最佳实践
 
 ### 插件开发推荐模式

@@ -1,1 +1,5 @@
-# 官方插件一览
+# 插件市场
+
+<ClientOnly>
+<PluginMarket />
+</ClientOnly>

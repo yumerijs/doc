@@ -5,7 +5,7 @@ hero:
   name: Yumerijs
   tagline: 新一代模块化Web应用构建平台
   image:
-    src: https://api.flweb.cn/doc/image/bot.jpg
+    src: https://api.flweb.cn/logos/yumeri/circle.png
     alt: Yumeri
   actions:
     - theme: brand
