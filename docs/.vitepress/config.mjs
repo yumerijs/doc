@@ -65,6 +65,7 @@ export default defineConfig({
                     { text: '配置 (Config)', link: '/api/config' },
                     { text: '平台 (Platform)', link: '/api/platform' },
                     { text: '日志 (Logger)', link: '/api/logger' }
+                    { text: '国际化 (I18n)', link: '/api/i18n' }
                   ]
                 },
                 {
