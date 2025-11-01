@@ -2,75 +2,40 @@
 
 ## 概述
 
-Core 是 Yumerijs 框架的核心类，负责插件管理、事件分发、指令处理和中间件执行等核心功能。虽然 Core 提供了丰富的 API，但在插件开发中，**推荐通过 Context 对象间接使用这些功能**，而不是直接操作 Core 实例。
+Core 是 Yumerijs 框架的核心类，负责组件管理、事件分发、路由处理和中间件执行等核心功能。**插件管理、配置加载和插件热重载等功能已迁移至 `PluginLoader` 类**。虽然 Core 提供了丰富的 API，但在插件开发中，**推荐通过 Context 对象间接使用这些功能**，而不是直接操作 Core 实例。
 
 ## 类定义
 
 ```typescript
 export class Core {
-  public plugins: { [name: string]: Plugin & { depend?: string[]; provide?: string[] } };
-  public config: any;
-  public platforms: Platform[];
-  private eventListeners: { [event: string]: ((...args: any[]) => Promise<void>)[] };
+  public eventListeners: { [event: string]: ((...args: any[]) => Promise<void>)[] };
   public components: { [name: string]: any };
-  public commands: Record<string, Command>;
   public routes: Record<string, Route>;
-  public pluginLoader: PluginLoader;
   public logger: Logger;
-  public providedComponents: { [name: string]: string };
-  private pluginModules: { [name: string]: any };
-  private configPath: string;
-  private globalMiddlewares: Record<string, Middleware>;
-  /**
-   * @deprecated 命令与插件对应关系
-   */
-  public cmdtoplu: Record<string, string>;
-  /**
-   * 路由与插件对应关系
-   */
-  public routetoplu: Record<string, string>;
-  /**
-   * 组件与插件对应关系
-   */
-  public comtoplu: Record<string, string>;
-  /**
-   * 事件监听器与插件对应关系
-   */
-  public evttoplu: Record<string, Record<string, ((...args: any[]) => Promise<void>)[]>>;
-  /**
-   * 中间件与插件对应关系
-   */
-  public mdwtoplu: Record<string, string>;
-  public plftoplu: Record<string, string>;
-  /**
-   * 插件状态
-   */
-  public pluginStatus: Record<string, PluginStatus>;
-  /**
-   * 插件监听器
-   */
-  private pluginWatchers: Record<string, chokidar.FSWatcher>;
+  public globalMiddlewares: Record<string, Middleware>;
+  public hooks: Record<string, Hook>;
+  public coreConfig: CoreOptions;
+  public server: CoreServer;
+  public i18n: I18n;
+  public loader: any; // PluginLoader 实例
 
-  constructor(pluginLoader: PluginLoader);
+  constructor(loader?: any, coreConfig?: CoreOptions, setCore = true);
   
-  async loadConfig(configPath: string): Promise<void>;
-  async getPluginConfig(pluginName: string): Promise<Config>;
-  async loadPlugins(): Promise<void>;
-  watchPlugins(core: Core, pluginsDir?: string): void;
-  async reloadPlugin(pluginName: string, core: Core): Promise<void>;
-  async unloadPluginAndEmit(pluginName: string, core: Core): Promise<void>;
+  async runCore(): Promise<void>;
+  public getShortPluginName(pluginName: string): string;
+  public async plugin(pluginInstance: Plugin, context: Context, config: Config): Promise<void>;
   registerComponent(name: string, component: any): void;
   getComponent(name: string): any;
   unregisterComponent(name: string): void;
   on(event: string, listener: (...args: any[]) => Promise<void>): void;
   async emit(event: string, ...args: any[]): Promise<void>;
   use(name: string, middleware: Middleware): Core;
-  command(name: string): Command;
-  async executeCommand(name: string, session: any, ...args: any[]): Promise<Session | null>;
-  registerPlatform(platform: Platform): any
-  async executeRoute(pathname: string, session: Session, queryParams: URLSearchParams): Promise<boolean>
-  unregall(pluginname: string): void
-  getRoute(path: string): Route | false
+  route(path: string): Route;
+  hook(name: string, hookname: string, callback: HookHandler): any;
+  unhook(name: string, hookname: string): any;
+  async hookExecute(name: string, ...args: any[]): Promise<any[]>;
+  async executeRoute(pathname: string, session: Session, queryParams: URLSearchParams): Promise<boolean>;
+  getRoute(path: string): Route | false;
 }
 ```
 
@@ -78,100 +43,46 @@ export class Core {
 
 | 属性 | 类型 | 描述 |
 |------|------|------|
-| plugins | `{ [name: string]: Plugin & { depend?: string[]; provide?: string[] } }` | 已加载的插件集合 |
-| config | any | 框架配置对象 |
-| platforms | Platform[] | 已注册的平台列表 |
+| eventListeners | `{ [event: string]: ((...args: any[]) => Promise<void>)[] }` | 事件监听器集合 |
 | components | `{ [name: string]: any }` | 已注册的组件集合 |
 | routes | `Record<string, Route>` | 已注册的路由集合 |
 | logger | Logger | 核心日志记录器 |
-| providedComponents | `{ [name: string]: string }` | 组件与提供该组件的插件映射 |
-| routetoplu | `Record<string, string>` | 路由与插件的映射关系 |
-| comtoplu | `Record<string, string>` | 组件与插件的映射关系 |
-| evttoplu | `Record<string, Record<string, ((...args: any[]) => Promise<void>)[]>>` | 事件与插件的映射关系 |
-| mdwtoplu | `Record<string, string>` | 中间件与插件的映射关系 |
-| plftoplu | `Record<string, string>` | 平台与插件的映射关系 |
+| globalMiddlewares | `Record<string, Middleware>` | 全局中间件集合 |
+| hooks | `Record<string, Hook>` | 钩子（Hook）集合 |
+| coreConfig | CoreOptions | 核心配置对象 |
+| server | CoreServer | 核心 HTTP/WebSocket 服务器实例 |
+| i18n | I18n | 国际化实例 |
+| loader | any | PluginLoader 实例 |
 
 ## 方法
 
-### async loadConfig(configPath: string): `Promise<void>`
+### async runCore(): `Promise<void>`
 
-加载框架配置文件。
-
-**参数：**
-- `configPath: string` - 配置文件路径
+启动核心服务器（HTTP/WebSocket）。
 
 **示例：**
 ```typescript
-await core.loadConfig('./config.yml');
+await core.runCore();
 ```
 
-### async getPluginConfig(pluginName: string): `Promise<Config>`
+### public getShortPluginName(pluginName: string): `string`
 
-获取指定插件的配置。
+获取插件的短名称，用于日志输出等。
 
 **参数：**
-- `pluginName: string` - 插件名称
+- `pluginName: string` - 插件完整名称
 
 **返回值：**
-- `Promise<Config>` - 插件配置对象
+- `string` - 插件短名称
 
-**示例：**
-```typescript
-const config = await core.getPluginConfig('my-plugin');
-const apiKey = config.get('apiKey');
-```
+### public async plugin(pluginInstance: Plugin, context: Context, config: Config): `Promise<void>`
 
-### async loadPlugins(): `Promise<void>`
-
-加载所有配置中启用的插件。
-
-**示例：**
-```typescript
-await core.loadConfig('./config.yml');
-await core.loadPlugins();
-```
-
-### watchPlugins(core: Core, pluginsDir?: string): void
-
-监视插件目录变化，实现热重载。
+执行插件的 `apply` 方法，加载插件功能。此方法由 `PluginLoader` 调用。
 
 **参数：**
-- `core: Core` - Core 实例
-- `pluginsDir?: string` - 插件目录，默认为 'plugins'
-
-**示例：**
-```typescript
-// 在开发环境中启用插件热重载
-if (process.env.NODE_ENV === 'development') {
-  core.watchPlugins(core);
-}
-```
-
-### async reloadPlugin(pluginName: string, core: Core): `Promise<void>`
-
-重新加载指定插件。
-
-**参数：**
-- `pluginName: string` - 插件名称
-- `core: Core` - Core 实例
-
-**示例：**
-```typescript
-await core.reloadPlugin('my-plugin', core);
-```
-
-### async unloadPluginAndEmit(pluginName: string, core: Core): `Promise<void>`
-
-卸载指定插件并触发相关事件。
-
-**参数：**
-- `pluginName: string` - 插件名称
-- `core: Core` - Core 实例
-
-**示例：**
-```typescript
-await core.unloadPluginAndEmit('my-plugin', core);
-```
+- `pluginInstance: Plugin` - 插件实例
+- `context: Context` - 插件上下文
+- `config: Config` - 插件配置
 
 ### registerComponent(name: string, component: any): void
 
@@ -266,12 +177,12 @@ core.use('logger', async (session, next) => {
 });
 ```
 
-### route(name: string): Route
+### route(path: string): Route
 
 创建一个路由。
 
 **参数：**
-- `name: string` - 路由名称
+- `path: string` - 路由路径
 
 **返回值：**
 - `Route` - 路由对象
@@ -285,6 +196,34 @@ core.route('/hello')
     session.setMime('text');
   });
 ```
+
+### hook(name: string, hookname: string, callback: HookHandler): any
+
+注册一个钩子（Hook）处理函数。
+
+**参数：**
+- `name: string` - 钩子名称
+- `hookname: string` - 钩子处理函数名称
+- `callback: HookHandler` - 钩子处理函数
+
+### unhook(name: string, hookname: string): any
+
+取消注册一个钩子处理函数。
+
+**参数：**
+- `name: string` - 钩子名称
+- `hookname: string` - 钩子处理函数名称
+
+### async hookExecute(name: string, ...args: any[]): `Promise<any[]>`
+
+执行一个钩子，并收集所有处理函数的返回值。
+
+**参数：**
+- `name: string` - 钩子名称
+- `...args: any[]` - 传递给钩子处理函数的参数
+
+**返回值：**
+- `Promise<any[]>` - 所有钩子处理函数的返回值数组
 
 ### async executeRoute(pathname: string, session: any, queryParams: URLSearchParams): `Promise<boolean>`
 
@@ -304,6 +243,16 @@ const session = new Session('127.0.0.1', {}, platform);
 await core.executeRoute('hello', session);
 ```
 
+### getRoute(path: string): Route | false
+
+获取匹配指定路径的路由对象。
+
+**参数：**
+- `path: string` - 路径
+
+**返回值：**
+- `Route | false` - 匹配的路由对象或 `false`
+
 ## 内置事件
 
 Core 提供了以下内置事件：
@@ -313,7 +262,7 @@ Core 提供了以下内置事件：
 | plugin-loaded | 插件加载完成时 | pluginName: string |
 | plugin-unloaded | 插件卸载完成时 | pluginName: string |
 | plugin-reloaded | 插件重新加载完成时 | pluginName: string |
-| config-changed | 配置文件变更时 | newConfig: any |
+| config-reloaded | 配置文件重新加载时 | newConfig: any |
 
 ## 最佳实践
 
@@ -337,28 +286,3 @@ export async function apply(ctx: Context, config: Config) {
   });
 }
 ```
-
-### 框架启动流程
-
-框架的标准启动流程如下：
-
-```typescript
-import { Core, PluginLoader } from 'yumerijs';
-
-async function bootstrap() {
-  // 创建插件加载器
-  const pluginLoader = new PluginLoader();
-  
-  // 创建 Core 实例
-  const core = new Core(pluginLoader);
-  
-  // 加载配置
-  await core.loadConfig('./config.yml');
-  
-  // 加载插件
-  await core.loadPlugins();
-  
-  console.log('Yumerijs 框架启动完成');
-}
-
-bootstrap().catch(console.error);
