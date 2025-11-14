@@ -64,7 +64,7 @@ const ctx2 = ctx1.fork('plugin2');
 
 ### 创建配置对象
 
-插件启用前需要先传递配置，所以需要创建一个 Cobfig 对象：
+插件启用前需要先传递配置，所以需要创建一个 Config 对象：
 ```typescript
 const config1 = new Config('plugin', {
   config1: 'hello',
@@ -79,3 +79,15 @@ const config1 = new Config('plugin', {
 const plugin = require('./plugin');
 core.config(plugin, ctx, config);
 ```
+
+## 注入依赖
+
+插件上下文可以通过注入依赖来为插件提供服务：
+```typescript
+ctx.inject('database', database)
+// 或者在创建时批量注入
+const injections: Record<string, any> = {
+  database,
+  logger,
+};
+const ctx = new Context(core, 'plugin', injections)
