@@ -2,14 +2,17 @@
 
 ## 概述
 `console` 是 **Yumeri** 框架的内置控制台组件，用于管理控制台页面、插件配置界面与登录状态。  
-通过 `ctx.getComponent('console')` 获取该组件后，可以安全地注册、移除控制台项，并检测管理员登录状态。  
+通过 `ctx.component.console` 获取该组件后，可以安全地注册、移除控制台项，并检测管理员登录状态。  
 
 ---
 
 ## 获取组件
 
 ```ts
-const console = ctx.getComponent('console');
+// 先导入类型声明
+import 'yumeri-plugin-console';
+
+const console = ctx.component.console;
 ```
 
 返回值：`ConsoleComponent` 实例。
@@ -104,9 +107,10 @@ if (console.getloginstatus(session)) {
 ```ts
 import { Context, Config } from 'yumeri';
 import path from 'path';
+import 'yumeri-plugin-console';
 
 export async function apply(ctx: Context, config: Config) {
-  const console = ctx.getComponent('console');
+  const console = ctx.component.console;
 
   console.addconsoleitem(
     'dashboard',
