@@ -22,16 +22,16 @@ export class Context {
 
     constructor(core: Core, pluginname: string);
 
-    /** @deprecated Use route() instead. */
-    command(name: string): Command;
-
     route(path: string): Route;
     on(name: string, listener: (...args: any[]) => Promise<void>): void;
     use(name: string, callback: Function): void;
     getCore(): Core;
     async emit(event: string, ...args: any[]): Promise<void>;
+    // 已弃用 - 获取组件
     getComponent(name: string): any;
     registerComponent(name: string, component: any): void;
+    // 动态注入
+    component: Components;
 ```
 
 ---
@@ -45,24 +45,6 @@ export class Context {
 ---
 
 ## 方法
-
-### command(name: string): Command
-
-**说明**：已废弃，推荐使用 `route()` 或 Context 提供的路由/组件方法。  
-尝试注册已存在的命令会发出警告，并返回已存在的命令对象。
-
-**参数：**
-- `name: string` - 命令名称
-
-**返回值：**
-- `Command` - 命令对象实例
-
-**示例：**
-```typescript
-ctx.command('sayHello'); // 不推荐使用
-```
-
----
 
 ### route(path: string): Route
 
@@ -152,6 +134,8 @@ await ctx.emit('my-plugin-ready', { version: '1.0.0' });
 ### getComponent(name: string): any
 
 获取已注册组件实例。
+
+> 已弃用，改为使用context.component进行动态依赖注入，降低耦合性
 
 **参数：**
 - `name: string` - 组件名称
@@ -250,8 +234,8 @@ export const depend = ['database', 'logger'];
 export const provide = ['my-service'];
 
 export async function apply(ctx: Context, config: Config) {
-  const db = ctx.getComponent('database');
-  const logger = ctx.getComponent('logger');
+  const db = ctx.component.database;
+  const logger = ctx.component.logger;
 
   const myService = createMyService(db, logger);
 
