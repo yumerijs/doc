@@ -110,7 +110,8 @@ export default defineConfig({
                 { text: '钩子', link: '/dev/hook' },
                 { text: '配置构型', link: '/dev/config' },
                 { text: '中间件', link: '/dev/middleware' },
-                { text: '事件监听', link: '/dev/event' }
+                { text: '事件监听', link: '/dev/event' },
+                { text: '渲染器（实验）', link: '/dev/renderer' }
               ]
             }
           ]
