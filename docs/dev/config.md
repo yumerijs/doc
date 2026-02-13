@@ -4,216 +4,72 @@
 
 ## 配置系统概述
 
-Yumeri框架提供了强大而灵活的配置系统，允许开发者定义和管理插件配置。配置系统主要由两个核心类组成：`ConfigSchema`（配置模式）和`Config`（配置对象）。
+Yumeri框架提供了强大而灵活的配置系统，允许开发者定义和管理插件配置。配置由 `Schema` 描述结构，实际注入到插件 `apply(ctx, config)` 中的是普通对象。
 
-## 配置模式（ConfigSchema）
+## 当前的 Schema 定义方式（推荐）
 
-`ConfigSchema`类用于描述配置项的类型、默认值、描述等信息，是Yumeri配置系统的基础。
+现版本使用 `Schema` 类来定义配置结构，`ConfigSchema` 只是 `Schema` 的别名（`export { Schema as ConfigSchema }`）。在插件中推荐直接使用 `Schema`：
 
-### 基本属性
+```ts
+import { Schema } from 'yumeri'
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| `type` | `'string' \| 'number' \| 'boolean' \| 'object' \| 'array'` | 配置项类型 |
-| `default` | `any` | 配置项默认值 |
-| `description` | `string` | 配置项描述 |
-| `required` | `boolean` | 是否必需 |
-| `enum` | `any[]` | 枚举值列表（可选项） |
-| `items` | `ConfigSchema` | 数组项类型定义（当type为array时使用） |
-| `properties` | `Record<string, ConfigSchema>` | 对象属性定义（当type为object时使用） |
-
-### 创建配置模式
-
-可以通过构造函数或静态方法创建配置模式：
-
-```typescript
-// 使用构造函数
-const schema = new ConfigSchema('string', {
-  default: 'default value',
-  description: '配置项描述',
-  required: true,
-  enum: ['option1', 'option2']
-});
-
-// 使用静态方法
-const stringSchema = ConfigSchema.string({
-  default: 'default value',
-  description: '字符串配置项',
-  required: true,
-  enum: ['option1', 'option2']
-});
-
-const numberSchema = ConfigSchema.number({
-  default: 42,
-  description: '数字配置项',
-  required: false
-});
-
-const booleanSchema = ConfigSchema.boolean({
-  default: true,
-  description: '布尔配置项'
-});
-```
-
-### 复杂类型配置模式
-
-#### 对象类型
-
-```typescript
-const objectSchema = ConfigSchema.object(
-  {
-    name: ConfigSchema.string({ required: true }),
-    age: ConfigSchema.number({ default: 18 }),
-    active: ConfigSchema.boolean({ default: true })
-  },
-  {
-    description: '用户配置',
-    required: true
+export interface MyPluginConfig {
+  port: number
+  host: string
+  enableCache: boolean
+  roles: string[]
+  database: {
+    url: string
+    poolSize: number
   }
-);
+}
+
+export const config: Schema<MyPluginConfig> = Schema.object({
+  port: Schema.number('监听端口').default(14510),
+  host: Schema.string('监听地址').default('0.0.0.0'),
+  enableCache: Schema.boolean('是否启用缓存').default(false),
+  roles: Schema.array(Schema.string(), '角色列表').default(['user']),
+  database: Schema.object({
+    url: Schema.string('数据库连接').required(),
+    poolSize: Schema.number('连接池大小').default(10),
+  }, '数据库配置'),
+})
 ```
 
-#### 数组类型
+常用方法：
 
-```typescript
-const arraySchema = ConfigSchema.array(
-  ConfigSchema.string({ enum: ['admin', 'user', 'guest'] }),
-  {
-    description: '角色列表',
-    default: ['user']
-  }
-);
-```
+- `Schema.string/number/boolean`：基础类型
+- `Schema.array(inner)`：数组类型
+- `Schema.object(properties)`：对象类型
+- `Schema.enum(values)`：枚举类型
+- `Schema.extend(base, extension)`：扩展已有对象 Schema
+- `schema.required()`：必填
+- `schema.default(value)`：默认值
 
-#### 嵌套复杂类型
+配置读取时会自动应用默认值（`fallback` 机制），插件 `apply(ctx, config)` 中接收到的是普通对象：
 
-```typescript
-const complexSchema = ConfigSchema.object(
-  {
-    name: ConfigSchema.string({ required: true }),
-    settings: ConfigSchema.object(
-      {
-        theme: ConfigSchema.string({ default: 'light', enum: ['light', 'dark'] }),
-        notifications: ConfigSchema.boolean({ default: true })
-      }
-    ),
-    tags: ConfigSchema.array(
-      ConfigSchema.string()
-    )
-  }
-);
-```
-
-## 配置对象（Config）
-
-`Config`类用于存储和管理配置内容，提供了获取和设置配置项的方法。
-
-### 基本属性
-
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| `name` | `string` | 配置名称 |
-| `content` | `{ [name: string]: any }` | 配置内容 |
-| `schema` | `Record<string, ConfigSchema>` | 配置模式 |
-
-### 创建配置对象
-
-```typescript
-// 创建配置对象
-const config = new Config(
-  'myPlugin',  // 配置名称
-  {  // 配置内容
-    port: 3000,
-    debug: true,
-    host: 'localhost'
-  },
-  {  // 配置模式
-    port: ConfigSchema.number({ default: 8080, description: '服务端口' }),
-    debug: ConfigSchema.boolean({ default: false, description: '是否开启调试模式' }),
-    host: ConfigSchema.string({ default: '127.0.0.1', description: '服务主机' })
-  }
-);
-```
-
-### 获取配置项
-
-使用`get`方法获取配置项值，如果配置项不存在，将返回默认值：
-
-```typescript
-// 获取配置项
-const port = config.get<number>('port');  // 3000
-const debug = config.get<boolean>('debug');  // true
-const timeout = config.get<number>('timeout', 5000);  // 5000（使用传入的默认值）
-```
-
-### 设置配置项
-
-使用`set`方法设置配置项值：
-
-```typescript
-// 设置配置项
-config.set('port', 8080);
-config.set('debug', false);
-```
-
-## 实际应用示例
-
-### 插件配置定义
-
-```typescript
-// 定义插件配置模式
-const pluginSchema = {
-  server: ConfigSchema.object(
-    {
-      port: ConfigSchema.number({ default: 3000, description: '服务端口' }),
-      host: ConfigSchema.string({ default: 'localhost', description: '服务主机' })
-    },
-    { description: '服务器配置' }
-  ),
-  database: ConfigSchema.object(
-    {
-      url: ConfigSchema.string({ required: true, description: '数据库连接URL' }),
-      poolSize: ConfigSchema.number({ default: 10, description: '连接池大小' })
-    },
-    { description: '数据库配置' }
-  ),
-  features: ConfigSchema.array(
-    ConfigSchema.string({ enum: ['auth', 'logging', 'caching'] }),
-    { default: ['logging'], description: '启用的功能' }
-  ),
-  debug: ConfigSchema.boolean({ default: false, description: '调试模式' })
-};
-
-// 在插件的apply函数中使用
-export async function apply(core: Core, config: Config) {
-  // 获取配置项
-  const serverPort = config.get<number>('server.port');
-  const databaseUrl = config.get<string>('database.url');
-  const enabledFeatures = config.get<string[]>('features');
-  const isDebug = config.get<boolean>('debug');
-  
-  // 使用配置项初始化插件
-  // ...
+```ts
+export async function apply(ctx, config: MyPluginConfig) {
+  // config 已包含默认值
+  const { port, database } = config
 }
 ```
 
-### 配置文件示例（YAML格式）
+## 配置文件示例（YAML格式）
 
 ```yaml
 # config.yml
 plugins:
-  - yumeri-plugin-server:
-      server:
-        port: 8080
-        host: '0.0.0.0'
-      database:
-        url: 'mongodb://localhost:27017/myapp'
-        poolSize: 20
-      features:
-        - auth
-        - logging
-        - caching
-      debug: true
+  yumeri-plugin-example:
+    port: 8080
+    host: '0.0.0.0'
+    database:
+      url: 'mongodb://localhost:27017/myapp'
+      poolSize: 20
+    roles:
+      - user
+      - admin
+    enableCache: true
 ```
 
 ## 最佳实践
@@ -226,12 +82,12 @@ plugins:
 
 4. **结构化配置**：使用对象和数组组织相关的配置项，使配置结构更清晰。
 
-5. **类型安全**：使用泛型获取配置项值，确保类型安全。
+5. **类型安全**：使用泛型约束配置对象类型，减少运行时错误。
 
 ## 注意事项
 
-1. Yumeri当前的配置验证还未完全成熟，请等待后续更改。
+1. Yumeri 当前的配置校验还未完全成熟，请等待后续更改。
 
-2. 配置系统支持从schema中获取默认值，如果配置内容中没有指定值，将使用schema中的默认值。
+2. 配置系统支持从 Schema 中获取默认值，如果配置内容中没有指定值，将使用 Schema 中的默认值。
 
-3. 由于框架处于快速迭代阶段，配置API可能会发生变化，请以最新API为准。
+3. 由于框架处于快速迭代阶段，配置 API 可能会发生变化，请以最新代码为准。

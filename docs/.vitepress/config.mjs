@@ -109,6 +109,7 @@ export default defineConfig({
                 { text: '路由开发', link: '/dev/route' },
                 { text: '钩子', link: '/dev/hook' },
                 { text: '配置构型', link: '/dev/config' },
+                { text: 'Schema 可视化', link: '/dev/schema-builder' },
                 { text: '中间件', link: '/dev/middleware' },
                 { text: '事件监听', link: '/dev/event' },
                 { text: '渲染器（实验）', link: '/dev/renderer' }

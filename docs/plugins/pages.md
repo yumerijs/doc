@@ -1,38 +1,47 @@
 # 页面模型 (Pages)
 
+提供文章/页面数据模型及常用查询方法，适用于博客、页面渲染等场景。
+
+## 依赖
+
+- `database`
+- `user`
+
 ## 配置项
 
 该插件没有配置项。
 
-## 提供服务: Pages
+## 提供服务: pages
 
-### get(condition: Partial&lt;Pages&lt;): Promise&lt;Pick&lt;Pages, keyof Pages&gt;[]&gt;;
+### `pages.get(condition: Partial<Pages>)`
 
 获取指定条件的文章
 
-### getType(id: number): Promise&lt;string | null&gt;;
+### `pages.getType(id: number)`
 
 获取一个文章的类型字段
 
-### getMetadatas(id: number): Promise&lt;Pick&lt;Pagesmeta, keyof Pagesmeta&gt;[]&gt;;
+### `pages.getMetadatas(id: number)`
 
 获取一个文章的所有元信息
 
-### selectMetadata(id: number, key: string): Promise&lt;Pick&lt;Pagesmeta, keyof Pagesmeta&gt; | null&gt;;
+### `pages.selectMetadata(id: number, key: string)`
 
 获取一个文章的指定元信息
 
-### insert(page: Partial&lt;Pages&gt;): Promise&lt;Pages&gt;;
+### `pages.insert(page: Partial<Pages>)`
 
 插入一篇文章
 
-### update(id: number, page: Partial&lt;Pages&gt;): Promise&lt;number&gt;;
+### `pages.update(id: number, page: Partial<Pages>)`
 
 更新文章
 
-### getTypes(): Promise&lt;string[] | null&gt;;
+### `pages.getTypes()`
 
 获取所有文章类型
+
+> 插入时会自动补充 `created_at` / `updated_at` 字段，并默认设置 `status = published`、`comment_status = open`。
 
 ## Pages 模型定义
 ```typescript

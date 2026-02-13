@@ -2,13 +2,35 @@
 
 ## 概述
 
-Core 是 Yumerijs 框架的核心类，负责组件管理、事件分发、路由处理和中间件执行等核心功能。**插件管理、配置加载和插件热重载等功能已迁移至 `PluginLoader` 类**。虽然 Core 提供了丰富的 API，但在插件开发中，**推荐通过 Context 对象间接使用这些功能**，而不是直接操作 Core 实例。
+Core 是 Yumerijs 框架的核心类，负责组件管理、事件分发、路由处理和中间件执行等核心功能。**插件管理、配置加载与热重载等能力已迁移到 `PluginLoader`**。插件开发中，**推荐通过 `Context` 间接使用 Core**，避免直接操作 Core 实例。
+
+## CoreOptions
+
+```ts
+export interface CoreOptions {
+  port: number;
+  host: string;
+  staticDir: string;
+  enableCors: boolean;
+  enableWs: boolean;
+  lang: string[];
+}
+```
+
+Core 默认配置（`coreConfigSchema`）：
+
+- `port`: `14510`
+- `host`: `0.0.0.0`
+- `staticDir`: `public`
+- `enableCors`: `false`
+- `enableWs`: `false`
+- `lang`: `['zh', 'en']`
 
 ## 类定义
 
 ```typescript
 export class Core {
-  public eventListeners: { [event: string]: ((...args: any[]) => Promise<void>)[] };
+  public emitter: EventEmitter;
   public components: { [name: string]: any };
   public routes: Record<string, Route>;
   public logger: Logger;
@@ -18,23 +40,28 @@ export class Core {
   public server: CoreServer;
   public i18n: I18n;
   public loader: any; // PluginLoader 实例
+  public renderers: Map<string, IRenderer>;
+  public pluginRenderers: Map<string, string>;
 
   constructor(loader?: any, coreConfig?: CoreOptions, setCore = true);
-  
-  async runCore(): Promise<void>;
-  public getShortPluginName(pluginName: string): string;
-  public async plugin(pluginInstance: Plugin, context: Context, config: Config): Promise<void>;
+
+  addRenderer(renderer: IRenderer): void;
+  getRendererForPlugin(pluginName: string): string | undefined;
+  runCore(): Promise<void>;
+  getShortPluginName(pluginName: string): string;
+  plugin(pluginInstance: Plugin, context: Context, config: Config): Promise<void>;
   registerComponent(name: string, component: any): void;
   getComponent(name: string): any;
   unregisterComponent(name: string): void;
   on(event: string, listener: (...args: any[]) => Promise<void>): void;
-  async emit(event: string, ...args: any[]): Promise<void>;
+  off(event: string, listener: (...args: any[]) => Promise<void>): void;
+  emit(event: string, ...payload: any[]): void;
   use(name: string, middleware: Middleware): Core;
-  route(path: string): Route;
+  route(path: string, context: Context): Route;
   hook(name: string, hookname: string, callback: HookHandler): any;
   unhook(name: string, hookname: string): any;
-  async hookExecute(name: string, ...args: any[]): Promise<any[]>;
-  async executeRoute(pathname: string, session: Session, queryParams: URLSearchParams): Promise<boolean>;
+  hookExecute(name: string, ...args: any[]): Promise<any[]>;
+  executeRoute(pathname: string, session: Session, queryParams: URLSearchParams): Promise<boolean>;
   getRoute(path: string): Route | false;
 }
 ```
@@ -43,16 +70,18 @@ export class Core {
 
 | 属性 | 类型 | 描述 |
 |------|------|------|
-| eventListeners | `{ [event: string]: ((...args: any[]) => Promise<void>)[] }` | 事件监听器集合 |
+| emitter | `EventEmitter` | 内部事件总线 |
 | components | `{ [name: string]: any }` | 已注册的组件集合 |
 | routes | `Record<string, Route>` | 已注册的路由集合 |
-| logger | Logger | 核心日志记录器 |
+| logger | `Logger` | 核心日志记录器 |
 | globalMiddlewares | `Record<string, Middleware>` | 全局中间件集合 |
 | hooks | `Record<string, Hook>` | 钩子（Hook）集合 |
-| coreConfig | CoreOptions | 核心配置对象 |
-| server | CoreServer | 核心 HTTP/WebSocket 服务器实例 |
-| i18n | I18n | 国际化实例 |
-| loader | any | PluginLoader 实例 |
+| coreConfig | `CoreOptions` | 核心配置对象 |
+| server | `CoreServer` | 核心 HTTP/WebSocket 服务器实例 |
+| i18n | `I18n` | 国际化实例 |
+| loader | `any` | PluginLoader 实例 |
+| renderers | `Map<string, IRenderer>` | 已注册渲染器 |
+| pluginRenderers | `Map<string, string>` | 插件与渲染器映射 |
 
 ## 方法
 
@@ -177,12 +206,13 @@ core.use('logger', async (session, next) => {
 });
 ```
 
-### route(path: string): Route
+### route(path: string, context: Context): Route
 
 创建一个路由。
 
 **参数：**
 - `path: string` - 路由路径
+- `context: Context` - 所属插件上下文
 
 **返回值：**
 - `Route` - 路由对象
@@ -190,12 +220,20 @@ core.use('logger', async (session, next) => {
 **示例：**
 ```typescript
 // 注意：插件开发中推荐使用 ctx.route 而非直接调用此方法
-core.route('/hello')
+core.route('/hello', context)
   .action(async (session, _) => {
     session.body = 'Hello, World!';
     session.setMime('text');
   });
 ```
+
+### addRenderer(renderer: IRenderer): void
+
+注册一个渲染器。若同名渲染器已存在会被覆盖。
+
+### getRendererForPlugin(pluginName: string): `string | undefined`
+
+获取插件配置的渲染器名称。
 
 ### hook(name: string, hookname: string, callback: HookHandler): any
 
@@ -225,7 +263,7 @@ core.route('/hello')
 **返回值：**
 - `Promise<any[]>` - 所有钩子处理函数的返回值数组
 
-### async executeRoute(pathname: string, session: any, queryParams: URLSearchParams): `Promise<boolean>`
+### async executeRoute(pathname: string, session: Session, queryParams: URLSearchParams): `Promise<boolean>`
 
 执行指定路由。
 
@@ -253,16 +291,28 @@ await core.executeRoute('hello', session);
 **返回值：**
 - `Route | false` - 匹配的路由对象或 `false`
 
-## 内置事件
+## 内置事件（Core 侧）
 
-Core 提供了以下内置事件：
+Core 会在请求生命周期与日志输出时触发以下事件：
 
 | 事件名称 | 触发时机 | 参数 |
 |---------|---------|------|
-| plugin-loaded | 插件加载完成时 | pluginName: string |
-| plugin-unloaded | 插件卸载完成时 | pluginName: string |
-| plugin-reloaded | 插件重新加载完成时 | pluginName: string |
-| config-reloaded | 配置文件重新加载时 | newConfig: any |
+| `request:start` | 请求开始 | `{ path, route, method, plugin, start, sessionId }` |
+| `middleware:end` | 单个中间件结束 | `{ name, path, plugin, duration, sessionId }` |
+| `route:end` | 路由处理结束 | `{ path, route, plugin, duration, sessionId, status }` |
+| `request:end` | 请求结束 | `{ path, route, method, plugin, duration, status, sessionId }` |
+| `request:error` | 请求处理异常 | `{ path, route, plugin, error, sessionId }` |
+| `log` | Logger 写入 | `{ level, message, timestamp }` |
+
+## Loader 触发的事件
+
+以下事件由 `PluginLoader` 通过 Core 的事件系统触发：
+
+| 事件名称 | 触发时机 | 参数 |
+|---------|---------|------|
+| `plugin-unloaded` | 插件卸载完成 | `pluginName: string` |
+| `plugin-reloaded` | 插件重新加载完成 | `pluginName: string` |
+| `config-reloaded` | 配置文件重新加载 | `newConfig: any` |
 
 ## 最佳实践
 
