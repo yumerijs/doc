@@ -106,6 +106,7 @@ export default defineConfig({
               items: [
                 { text: '总览', link: '/dev/' },
                 { text: '插件基础', link: '/dev/plugin' },
+                { text: '装饰器 API', link: '/dev/decorator' },
                 { text: '路由开发', link: '/dev/route' },
                 { text: '钩子', link: '/dev/hook' },
                 { text: '配置构型', link: '/dev/config' },
