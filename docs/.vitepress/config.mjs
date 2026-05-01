@@ -81,17 +81,32 @@ export default defineConfig({
 
           '/dev/': [
             {
-              text: '开发指南',
+              text: '入门指南',
               items: [
                 { text: '总览', link: '/dev/' },
                 { text: '环境搭建', link: '/dev/setup' },
+              ]
+            },
+            {
+              text: '核心概念',
+              items: [
                 { text: '插件基础', link: '/dev/plugin' },
                 { text: '装饰器 API', link: '/dev/decorator' },
                 { text: '路由系统', link: '/dev/route' },
                 { text: '配置构型', link: '/dev/config' },
+              ]
+            },
+            {
+              text: '进阶主题',
+              items: [
                 { text: '中间件', link: '/dev/middleware' },
                 { text: '钩子系统', link: '/dev/hook' },
                 { text: '事件监听', link: '/dev/event' },
+              ]
+            },
+            {
+              text: '其他',
+              items: [
                 { text: 'Schema 可视化', link: '/dev/schema-builder' },
                 { text: '渲染器（实验）', link: '/dev/renderer' }
               ]
@@ -124,20 +139,30 @@ export default defineConfig({
         sidebar: {
           '/en/dev/': [
             {
-              text: 'Development Guide',
+              text: 'Getting Started',
               items: [
                 { text: 'Overview', link: '/en/dev/' },
                 { text: 'Setup', link: '/en/dev/setup' },
+              ]
+            },
+            {
+              text: 'Core Concepts',
+              items: [
                 { text: 'Plugin Basics', link: '/en/dev/plugin' },
-                { text: 'Route Development', link: '/en/dev/route' },
-                { text: 'Hooks', link: '/en/dev/hook' },
+                { text: 'Decorator API', link: '/en/dev/decorator' },
+                { text: 'Routing System', link: '/en/dev/route' },
                 { text: 'Config Structure', link: '/en/dev/config' },
+              ]
+            },
+            {
+              text: 'Advanced',
+              items: [
                 { text: 'Middleware', link: '/en/dev/middleware' },
+                { text: 'Hook System', link: '/en/dev/hook' },
                 { text: 'Event Listening', link: '/en/dev/event' }
               ]
             }
           ]
-          // ... similarly update en/api/ and en/plugins/ if needed, but keeping en/dev focus for now
         },
       }
     },
