@@ -1,36 +1,18 @@
-# Developer Guide
+# Developer Guide Overview
 
-> Important: Yumeri is rapidly evolving. Check the latest APIs on GitHub: https://github.com/yumerijs/yumeri
+Welcome to Yumeri Developer Documentation. Yumeri is a next-generation modular web application building platform based on Node.js, designed for ultimate development experience and modular decoupling.
 
-## Environment
+## Quick Start
 
-Create a template project and use "npm run dev" or "yarn dev" to start the dev mode. In dev mode, plugins are loaded from the "plugins" folder first.
+If you are new to Yumeri, follow these steps:
 
-## Workflow
+1.  **[Setup](./setup)**: Install the framework and initialize your first project.
+2.  **[Plugin Basics](./plugin)**: Learn how to write your first plugin (supports both Functional and Decorator APIs).
+3.  **[Config Structure](./config)**: Learn how to define plugin configurations with type safety.
 
-1. Create project
-2. Develop plugins
-3. Configure in "config.yml"
-4. Test locally
-5. Deploy
+## Core Concepts
 
-## Core concepts
-
-1. Plugin system – see /en/start/plugin and /en/dev/plugin
-2. Routing – see /en/dev/route
-3. Middleware – see /en/dev/middleware
-4. Events – see /en/dev/event
-
-## Tips
-
-- TypeScript for type‑safety
-- Hot reload in dev
-- Use caching and code‑splitting for performance
-
-## Best practices
-
-- Modular design
-- Clear interfaces
-- Robust error handling
-- Good documentation and tests
-
+-   **Modular**: Everything is a plugin.
+-   **Dual API Support**: Choose between Functional API or Decorator API.
+-   **Type Safety**: Deep integration with TypeScript.
+-   **Flexible Routing**: Powerful segment-matching based routing system.
