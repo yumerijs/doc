@@ -4,8 +4,11 @@
 import { useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { nextTick, provide } from 'vue'
+import APIToggle from './components/APIToggle.vue'
+import { useApiType } from './api-state'
 
 const { isDark } = useData()
+useApiType()
 
 const enableTransitions = () =>
   'startViewTransition' in document &&
@@ -42,7 +45,11 @@ provide('toggle-appearance', async ({ clientX: x, clientY: y }: MouseEvent) => {
 </script>
 
 <template>
-  <DefaultTheme.Layout />
+  <DefaultTheme.Layout>
+    <template #sidebar-nav-before>
+      <APIToggle />
+    </template>
+  </DefaultTheme.Layout>
 </template>
 
 <style>

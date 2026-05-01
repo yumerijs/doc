@@ -12,6 +12,8 @@
 
 在插件的`src`目录下找到`index.ts`，在其中输入以下内容：
 
+<div class="functional-api">
+
 ```typescript
 import { Context, Config, Session } from 'yumeri';
 
@@ -19,9 +21,8 @@ export async function apply(ctx: Context, config: Config) {
   // 加载插件时执行的操作
   ctx.route('/foo')
     .action(async (session: Session, _) => {
-      session.setMime('text');
-      session.body = `<h1>This is my plugin</h1>
-<h2>welcome!</h2>`;
+      session.respond(`<h1>This is my plugin</h1>
+<h2>welcome!</h2>`, 'html');
     });
 }
 
@@ -29,6 +30,26 @@ export async function disable(ctx: Context) {
   // 卸载插件时执行的操作
 }
 ```
+
+</div>
+
+<div class="decorator-api">
+
+```typescript
+import { Controller, Get, Session } from 'yumeri';
+
+@Controller('/foo')
+export default class MyPlugin {
+  @Get('/')
+  async action(session: Session) {
+    session.setMime('text');
+    session.body = `<h1>This is my plugin</h1>
+<h2>welcome!</h2>`;
+  }
+}
+```
+
+</div>
 
 重启yumeri以运行，打开yumeri监听地址+/foo，你将会看到：This is myplugin welcome!
 
