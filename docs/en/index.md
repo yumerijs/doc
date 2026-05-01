@@ -2,24 +2,28 @@
 layout: home
 
 hero:
-  name: Yumerijs
-  tagline: Next‑gen modular Web application platform
+  name: Yumeri
+  text: Next-Gen Modular Web Application Framework for Node.js
+  tagline: Built for Developer Experience, Born with Modular DNA
   image:
-    src: https://api.flweb.cn/doc/image/bot.jpg
+    src: https://api.flweb.cn/logos/yumeri/circle.png
     alt: Yumeri
   actions:
     - theme: brand
       text: Get Started
-      link: /en/start/install
+      link: /en/dev/setup
+    - theme: alt
+      text: Developer Guide
+      link: /en/dev/
+    - theme: alt
+      text: Plugin Market
+      link: /en/plugins/
 
 features:
-  - icon: 🛠️
-    title: Free & Open Source
-    details: Yumerijs adopts the MIT license; anyone can freely use and distribute it.
-  - icon: 🎉
-    title: Easy to Extend
-    details: Works standalone or integrates with existing frameworks; supports both middleware and plugin driven modes.
-  - icon: 🚀
-    title: Simple to Start
-    details: Comes with a Web console. Even newcomers can get started easily.
+  - title: 🚀 High Performance
+    details: Event-driven architecture with efficient routing algorithms.
+  - title: 🧩 Modular DNA
+    details: Everything is a plugin, supporting hot-reload and dynamic registration.
+  - title: 🛠 Dual API Support
+    details: Choose between declarative Decorator API or flexible Functional API.
 ---
