@@ -36,15 +36,17 @@ export async function disable(ctx: Context) {
 <div class="decorator-api">
 
 ```typescript
-import { Controller, Get, Session } from 'yumeri';
+import { Session, Context } from 'yumeri';
+import { Plugin, Get } from '@yumerijs/decorator';
 
-@Controller('/foo')
+@Plugin
 export default class MyPlugin {
-  @Get('/')
+  constructor(_ctx: Context, _config: any) {}
+
+  @Get('/foo')
   async action(session: Session) {
-    session.setMime('text');
-    session.body = `<h1>This is my plugin</h1>
-<h2>welcome!</h2>`;
+    session.respond(`<h1>This is my plugin</h1>
+<h2>welcome!</h2>`, 'html');
   }
 }
 ```
@@ -69,7 +71,9 @@ yumeri-plugin-example/
 
 ### 插件入口文件
 
-插件的入口文件（编译后通常是是`dist/index.js`）可以导出两个函数：
+插件的入口文件（编译后通常是是`dist/index.js`）可以根据选用的 API 模式导出：
+
+<div class="functional-api">
 
 1. **apply**：插件加载时调用，用于初始化插件和注册功能
 2. **disable**：插件卸载时调用，用于清理资源等
@@ -85,6 +89,26 @@ export async function disable(ctx: Context): Promise<void> {
   // 清理代码
 }
 ```
+
+</div>
+
+<div class="decorator-api">
+
+在装饰器模式下，插件入口必须 **默认导出 (default export)** 一个类，并且类上必须使用 `@Plugin` 装饰器。Yumeri 会自动实例化该类并解析其中的装饰器。
+
+```typescript
+import { Context } from 'yumeri';
+import { Plugin } from '@yumerijs/decorator';
+
+@Plugin
+export default class MyPlugin {
+  constructor(ctx: Context, config: any) {
+    // 初始化代码
+  }
+}
+```
+
+</div>
 
 ## 核心API
 
@@ -132,8 +156,8 @@ interface Session {
   // 设置响应MIME类型
   setMime(mime: string): void;
   
-  // 响应体
-  body: any;
+  // 发送响应内容 (type 可选 'plain' 或 'html')
+  respond(content: any, type: 'plain' | 'html'): void;
   
   // 其他属性和方法...
 }
@@ -143,27 +167,38 @@ interface Session {
 
 路由是Yumeri插件的核心功能之一，用于处理特定的请求路径：
 
+<div class="functional-api">
+
 ```typescript
 ctx.route('/hello')
   .action(async (session: Session, param?: any) => {
-    session.setMime('text');
-    session.body = 'Hello, World!';
+    session.respond('Hello, World!', 'plain');
   });
 ```
 
-上面的代码注册了一个名为`hello`的路由，当访问`/hello`路径时，会返回"Hello, World!"。
+</div>
 
-## 插件开发最佳实践
+<div class="decorator-api">
 
-1. **命名规范**：插件名称应以`yumeri-plugin-`开头，便于识别
-2. **版本管理**：使用语义化版本控制，明确标注与Yumeri核心的兼容性
-3. **错误处理**：妥善处理可能出现的错误，避免影响整个应用
-4. **资源清理**：在`disable`函数中清理所有资源，避免内存泄漏
-5. **文档完善**：为插件提供清晰的文档，包括安装、配置和使用方法
+```typescript
+import { Plugin, Get } from '@yumerijs/decorator';
+
+@Plugin
+export default class HelloPlugin {
+  @Get('/hello')
+  async sayHello(session: Session) {
+    session.respond('Hello, World!', 'plain');
+  }
+}
+```
+
+</div>
 
 ## 示例：创建一个计数器插件
 
 以下是一个简单的计数器插件示例：
+
+<div class="functional-api">
 
 ```typescript
 import { Context, Config, Session } from 'yumeri';
@@ -175,24 +210,44 @@ export async function apply(ctx: Context, config: Config) {
   ctx.route('/counter-increment')
     .action(async (session: Session, param?: any) => {
       counter++;
-      session.setMime('text');
-      session.body = `Counter: ${counter}`;
+      session.respond(`Counter: ${counter}`, 'plain');
     });
   
   // 注册获取计数的路由
   ctx.route('/counter-get')
     .action(async (session: Session, param?: any) => {
-      session.setMime('text');
-      session.body = `Current count: ${counter}`;
+      session.respond(`Current count: ${counter}`, 'plain');
     });
 }
 
 export async function disable(ctx: Context) {
   // 清理资源
-  delete counter;
 }
 ```
 
-这个插件提供了两个路由：
-- `/counter-increment`：增加计数并返回当前值
-- `/counter-get`：获取当前计数值
+</div>
+
+<div class="decorator-api">
+
+```typescript
+import { Context, Session } from 'yumeri';
+import { Plugin, Get } from '@yumerijs/decorator';
+
+@Plugin
+export default class CounterPlugin {
+  private counter = 0;
+
+  @Get('/counter-increment')
+  async increment(session: Session) {
+    this.counter++;
+    session.respond(`Counter: ${this.counter}`, 'plain');
+  }
+
+  @Get('/counter-get')
+  async getCount(session: Session) {
+    session.respond(`Current count: ${this.counter}`, 'plain');
+  }
+}
+```
+
+</div>

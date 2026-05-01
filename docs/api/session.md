@@ -2,7 +2,7 @@
 
 ## 概述
 
-Session 类是 Yumerijs 框架中处理用户会话的核心组件，它封装了请求和响应的相关信息，提供了会话数据管理、Cookie 处理、MIME 类型设置等功能。每个命令处理函数都会接收一个 Session 实例，通过它可以获取请求信息并设置响应内容。
+Session 类是 Yumerijs 框架中处理用户会话的核心组件，它封装了请求和响应的相关信息，提供了会话数据管理、Cookie 处理、MIME 类型设置等功能。每个路由或命令处理函数都会接收一个 Session 实例，通过它可以获取请求信息并设置响应内容。
 
 ## 类定义
 
@@ -16,7 +16,6 @@ export class Session {
     public newCookie: Record<string, string>;
     public head: Record<string, any>;
     public status: number;
-    public body: any;
     public platform: Platform;
     public properties?: Record<string, any>;
 
@@ -27,6 +26,14 @@ export class Session {
     public clearData(): void;
     public destroy(): void;
     public setMime(mimeType: 'png' | 'jpg' | 'jpeg' | 'pdf' | 'plain' | 'html' | 'json' | 'xml' | string): void;
+    
+    /**
+     * 发送响应内容
+     * @param content 响应体
+     * @param type 响应类型，只能是 'plain' 或 'html'
+     */
+    public respond(content: any, type: 'plain' | 'html'): void;
+    
     public send(data: any): any;
     public endsession(message: any): any;
 }
@@ -44,11 +51,39 @@ export class Session {
 | newCookie | `Record<string, string>` | 要设置的新 Cookie |
 | head | `Record<string, any>` | 响应头信息 |
 | status | number | 响应状态码，默认为 200 |
-| body | any | 响应体内容 |
 | platform | Platform | 会话所属的平台实例 |
 | properties | `Record<string, any>` \| undefined | 会话附加属性 |
 
 ## 方法
+
+### respond(content: any, type: 'plain' | 'html'): void
+
+发送响应内容。这是推荐的设置响应体的方式。
+
+**注意：** `type` 参数仅用于指定基础的响应格式（纯文本或 HTML），它并不替代 `setMime` 方法。如果需要更细粒度的 MIME 类型控制，请先调用 `setMime`。
+
+**参数：**
+- `content: any` - 响应体内容
+- `type: 'plain' | 'html'` - 响应类型
+
+**示例：**
+```typescript
+session.respond('Hello, World!', 'plain');
+session.respond('<h1>Welcome</h1>', 'html');
+```
+
+### setMime(mimeType: 'png' | 'jpg' | 'jpeg' | 'pdf' | 'plain' | 'html' | 'json' | 'xml' | string): void
+
+设置响应的 MIME 类型。
+
+**参数：**
+- `mimeType` - MIME 类型，可以是预定义类型或自定义字符串
+
+**示例：**
+```typescript
+session.setMime('json');
+session.setMime('application/octet-stream');
+```
 
 ### setData(key: string, value: any): void
 
@@ -61,216 +96,52 @@ export class Session {
 **示例：**
 ```typescript
 session.setData('userId', 12345);
-session.setData('preferences', { theme: 'dark', language: 'zh-CN' });
-```
-
-### deleteData(key: string): void
-
-删除指定的会话数据。
-
-**参数：**
-- `key: string` - 要删除的数据键名
-
-**示例：**
-```typescript
-session.deleteData('temporaryData');
-```
-
-### clearData(): void
-
-清空所有会话数据。
-
-**示例：**
-```typescript
-session.clearData();
-```
-
-### destroy(): void
-
-销毁会话，清理相关资源。
-
-**示例：**
-```typescript
-session.destroy();
-```
-
-### setMime(mimeType: 'png' | 'jpg' | 'jpeg' | 'pdf' | 'plain' | 'html' | 'json' | 'xml' | string): void
-
-设置响应的 MIME 类型。
-
-**参数：**
-- `mimeType` - MIME 类型，可以是预定义类型或自定义字符串
-
-**示例：**
-```typescript
-// 使用预定义类型
-session.setMime('json');
-session.setMime('html');
-session.setMime('png');
-
-// 使用自定义 MIME 类型
-session.setMime('application/octet-stream');
 ```
 
 ### send(data: any): any
 
-通过平台发送数据给客户端。
-
-**参数：**
-- `data: any` - 要发送的数据
-
-**返回值：**
-- 平台处理结果
+通过平台发送数据给客户端。通常用于即时通讯平台的消息下发。
 
 **示例：**
 ```typescript
 session.send('Hello, World!');
-session.send({ message: 'Success', code: 0 });
-```
-
-### endsession(message: any): any
-
-结束会话并发送最后的消息。
-
-**参数：**
-- `message: any` - 结束会话时发送的消息
-
-**返回值：**
-- 平台处理结果
-
-**示例：**
-```typescript
-session.endsession('Session ended');
-session.endsession({ status: 'completed', message: 'Goodbye!' });
 ```
 
 ## 使用示例
 
-### 在命令处理函数中使用 Session
-
-```typescript
-import { Context, Config } from 'yumerijs';
-
-export async function apply(ctx: Context, config: Config) {
-  ctx.command('user')
-    .action(async (session) => {
-      // 获取查询参数
-      const userId = session.query?.id;
-      
-      if (!userId) {
-        session.status = 400;
-        session.body = { error: 'Missing user ID' };
-        session.setMime('json');
-        return;
-      }
-      
-      // 处理业务逻辑
-      const userData = await fetchUserData(userId);
-      
-      // 存储会话数据
-      session.setData('lastAccessedUser', userId);
-      
-      // 设置响应
-      session.status = 200;
-      session.body = userData;
-      session.setMime('json');
-      
-      // 设置 Cookie
-      session.newCookie.lastVisit = new Date().toISOString();
-    });
-}
-```
-
 ### 处理不同类型的响应
 
 ```typescript
-// 返回 JSON 数据
-ctx.command('api')
+// 返回纯文本
+ctx.route('/text')
   .action(async (session) => {
-    session.body = { success: true, data: { name: 'Yumeri' } };
-    session.setMime('json');
+    session.respond('Hello, World!', 'plain');
   });
 
 // 返回 HTML 内容
-ctx.command('page')
+ctx.route('/page')
   .action(async (session) => {
-    session.body = '<html><body><h1>Welcome to Yumeri</h1></body></html>';
-    session.setMime('html');
+    session.respond('<html><body><h1>Welcome to Yumeri</h1></body></html>', 'html');
   });
 
-// 返回纯文本
-ctx.command('text')
+// 返回 JSON 数据 (需配合 setMime)
+ctx.route('/api')
   .action(async (session) => {
-    session.body = 'Hello, World!';
-    session.setMime('plain');
-  });
-
-// 返回图片
-ctx.command('image')
-  .action(async (session) => {
-    session.body = imageBuffer; // Buffer 或 Uint8Array
-    session.setMime('png');
+    session.setMime('json');
+    session.respond(JSON.stringify({ success: true }), 'plain');
   });
 ```
 
 ## 最佳实践
 
-### 状态码使用
+### 响应规范
 
-根据操作结果设置适当的 HTTP 状态码：
+在 Yumeri 中，**不要** 直接给 `session.body` 赋值。始终使用 `session.respond()` 来发送响应，这能确保框架正确处理不同平台的下发逻辑。
 
 ```typescript
-// 成功
-session.status = 200; // OK
-session.status = 201; // Created
+// 推荐方式
+session.respond('Content', 'plain');
 
-// 客户端错误
-session.status = 400; // Bad Request
-session.status = 401; // Unauthorized
-session.status = 403; // Forbidden
-session.status = 404; // Not Found
-
-// 服务器错误
-session.status = 500; // Internal Server Error
+// 不推荐方式 (已废弃)
+// session.body = 'Content'; 
 ```
-
-### 会话数据管理
-
-会话数据应该只存储必要的信息，避免存储过大的对象：
-
-```typescript
-// 推荐
-session.setData('userId', user.id);
-session.setData('permissions', user.permissions);
-
-// 不推荐
-session.setData('user', completeUserObjectWithLargeData);
-```
-
-### 响应格式一致性
-
-保持 API 响应格式的一致性：
-
-```typescript
-// 统一的 JSON 响应格式
-function sendResponse(session, success, data = null, error = null) {
-  session.body = {
-    success,
-    data,
-    error,
-    timestamp: new Date().toISOString()
-  };
-  session.setMime('json');
-}
-
-// 使用
-ctx.command('api')
-  .action(async (session) => {
-    try {
-      const result = await someOperation();
-      sendResponse(session, true, result);
-    } catch (err) {
-      session.status = 500;
-      sendResponse(session, false, null, err.message);
-    }
-  });

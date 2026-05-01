@@ -4,20 +4,18 @@
 
 ## 路由系统简介
 
-Yumeri框架的路由系统是一个标准的Express语法路由，它允许你自由定义路由规则，并在应用程序中实现页面导航、参数传递等功能。
+Yumeri框架的路由系统提供灵活的路径匹配和处理机制。你可以通过函数式 API 或装饰器 API 来定义路由。
 
 ## 注册路由
 
-路由注册通过链式调用实现，将route对象返回至上下文，代码如下：
+路由注册将处理逻辑绑定到特定路径：
 
 <div class="functional-api">
 
 ```typescript
 ctx.route('/user/:id')
     .action((session, params, id) => {
-        logger.info('user id: ' + id)
-        session.setMime('html')
-        session.body = 'user id: ' + id
+        session.respond('user id: ' + id, 'plain');
     })
 ```
 
@@ -26,13 +24,13 @@ ctx.route('/user/:id')
 <div class="decorator-api">
 
 ```typescript
-@Controller('/user')
-class UserController {
-  @Get('/:id')
+import { Plugin, Get } from '@yumerijs/decorator';
+
+@Plugin
+export default class UserController {
+  @Get('/user/:id')
   async getUser(session, params, id) {
-    logger.info('user id: ' + id)
-    session.setMime('html')
-    session.body = 'user id: ' + id
+    session.respond('user id: ' + id, 'plain');
   }
 }
 ```
@@ -41,46 +39,113 @@ class UserController {
 
 ## 路由规则
 
-Yumeri框架的路由规则遵循Express语法，支持多种路由规则，包括：
+Yumeri框架的路由规则遵循类 Express 语法，支持多种规则：
 
 - 路径参数：`/user/:id`
 - 查询参数：`/user?id=123`
-- 路径参数和查询参数：`/user/:id?id=123`
-- 正则表达式：`/user/:id(\\d+)`
+- 可选参数：`/user/:id?`
+- 正则表达式支持
 
 ## 路由方法
 
-Yumeri框架的路由方法包括：
+设置路由支持的 HTTP 方法：
 
-- `get`：GET请求
-- `post`：POST请求
-- `put`：PUT请求
-
-设置路由支持的方法可通过以下表达式：
+<div class="functional-api">
 
 ```typescript
 ctx.route('/user/:id')
     .action((session, params, id) => {
-        logger.info('user id: ' + id)
-        session.setMime('html')
-        session.body = 'user id: ' + id
+        session.respond('user id: ' + id, 'plain');
     })
     .methods('get', 'post')
 ```
 
+</div>
+
+<div class="decorator-api">
+
+装饰器模式默认根据使用的装饰器（如 `@Get`）自动设置方法：
+
+```typescript
+import { Plugin, Get, Post } from '@yumerijs/decorator';
+
+@Plugin
+export default class UserController {
+  @Get('/user/:id')
+  async getUser(session, params, id) {
+    session.respond('user id: ' + id, 'plain');
+  }
+
+  @Post('/user')
+  async createUser(session) {
+    session.respond('created', 'plain');
+  }
+}
+```
+
+</div>
+
+## 高级装饰器用法
+
+在装饰器模式中，你可以使用函数动态解析路径或主机名。`@Host` 装饰器的功能等同于函数式 API 中的 `.host()` 方法。
+
+<div class="decorator-api">
+
+```typescript
+import { Plugin, Get, Host } from '@yumerijs/decorator';
+
+@Plugin
+export default class EchoPlugin {
+  constructor(_ctx: Context, private config: any) {}
+
+  @Get((plugin: EchoPlugin) => `/${plugin.config.path}`)
+  @Host((plugin: EchoPlugin) => plugin.config.host || undefined)
+  async echo(session: Session) {
+    session.setMime('text/plain');
+    session.respond('Echo content', 'plain');
+  }
+}
+```
+
+</div>
+
 ## 路由中间件
 
-Yumeri框架的路由中间件允许你在路由处理之前或之后执行一些操作，例如身份验证、日志记录等。中间件通过`use`方法注册，代码如下：
+中间件允许你在路由处理之前或之后执行逻辑：
+
+<div class="functional-api">
 
 ```typescript
 ctx.route('/user/:id')
     .use((session, next) => {
-        logger.info('before action')
-        next()
+        console.log('before action');
+        next();
     })
     .action((session, params, id) => {
-        logger.info('user id: ' + id)
-        session.setMime('html')
-        session.body = 'user id: ' + id
+        session.respond('user id: ' + id, 'plain');
     })
 ```
+
+</div>
+
+<div class="decorator-api">
+
+使用 `@Use` 装饰器挂载中间件：
+
+```typescript
+import { Plugin, Get, Use } from '@yumerijs/decorator';
+
+@Plugin
+export default class UserController {
+  @Get('/user/:id')
+  @Use(async (session, next) => {
+    console.log('before action');
+    await next();
+  })
+  async getUser(session, params, id) {
+    session.respond('user id: ' + id, 'plain');
+  }
+}
+```
+
+</div>
