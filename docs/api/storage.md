@@ -218,7 +218,7 @@ new SessionStorageProcessor(storage?, options?)
 
 ## 方法
 
-### load(sessionid: string): Promise<Record<string, any>>
+### `load(sessionid: string): Promise<Record<string, any>>`
 
 读取指定 Session 的数据。
 
@@ -238,7 +238,7 @@ const data = await processor.load(session.sessionid);
 
 ---
 
-### save(sessionid: string, data: Record<string, any>): Promise<void>
+### `save(sessionid: string, data: Record<string, any>): Promise<void>`
 
 保存 Session 数据。
 
@@ -259,7 +259,7 @@ await processor.save(session.sessionid, {
 
 ---
 
-### delete(sessionid: string): Promise<void>
+### `delete(sessionid: string): Promise<void>`
 
 删除指定 Session。
 
@@ -275,7 +275,7 @@ await processor.delete(session.sessionid);
 
 ---
 
-### clear(): Promise<void>
+### `clear(): Promise<void>`
 
 清空底层 Storage。
 
@@ -289,7 +289,7 @@ await processor.clear();
 
 ---
 
-### setStorage(storage: Storage<SessionStorageSnapshot>): void
+### `setStorage(storage: Storage<SessionStorageSnapshot>): void`
 
 设置底层 Storage。
 
@@ -305,7 +305,7 @@ processor.setStorage(new RedisStorage());
 
 ---
 
-### getStorage(): Storage<SessionStorageSnapshot>
+### `getStorage(): Storage<SessionStorageSnapshot>`
 
 获取当前使用的 Storage。
 
