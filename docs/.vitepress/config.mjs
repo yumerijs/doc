@@ -54,6 +54,7 @@ export default defineConfig({
                     { text: '中间件 (Middleware)', link: '/api/middleware' },
                     { text: '控制台 (Console)', link: '/api/console' },
                     { text: '数据库 (Database)', link: '/api/database' },
+                    { text: '存储 (Storage)', link: '/api/storage' },
                   ]
                 }
               ]
