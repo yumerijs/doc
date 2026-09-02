@@ -2,24 +2,28 @@
 layout: home
 
 hero:
-  name: Yumerijs
-  tagline: 新一代模块化Web应用构建平台
+  name: Yumeri
+  text: 基于 NodeJS 的新一代模块化 Web 应用构建平台
+  tagline: 极致的开发体验，天生的插件化基因
   image:
     src: https://api.flweb.cn/logos/yumeri/circle.png
     alt: Yumeri
   actions:
     - theme: brand
-      text: 马上开始
-      link: /start/install.html
+      text: 立即开始
+      link: /dev/setup
+    - theme: alt
+      text: 开发指南
+      link: /dev/
+    - theme: alt
+      text: 插件市场
+      link: /plugins/
 
 features:
-  - icon: 🛠️
-    title: 免费开源
-    details: Yumerijs采用MIT开源协议，任何人均可以自由分发和使用
-  - icon: 🎉
-    title: 易于扩展
-    details: Yumerijs可以与现有框架集成，也可以单独运行；支持中间件和插件双驱动模式
-  - icon: 🚀
-    title: 上手简单
-    details: Yumerijs拥有Web控制台，即便是小白也可以轻松上手使用
+  - title: 🚀 极致性能
+    details: 基于事件驱动与高效的路由分段匹配算法。
+  - title: 🧩 插件化架构
+    details: 从核心到业务，一切皆插件，支持热重载与动态注册。
+  - title: 🛠 双 API 支持
+    details: 自由选择声明式的装饰器 API 或灵活的函数式 API。
 ---

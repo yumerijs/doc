@@ -4,90 +4,68 @@
 
 ## 配置系统概述
 
-Yumeri框架提供了强大而灵活的配置系统，允许开发者定义和管理插件配置。配置由 `Schema` 描述结构，实际注入到插件 `apply(ctx, config)` 中的是普通对象。
+Yumeri框架通过 `Schema` 定义插件的配置结构，并在加载插件时自动注入解析后的配置对象（包含默认值）。
 
-## 当前的 Schema 定义方式（推荐）
+## 定义 Schema
 
-现版本使用 `Schema` 类来定义配置结构，`ConfigSchema` 只是 `Schema` 的别名（`export { Schema as ConfigSchema }`）。在插件中推荐直接使用 `Schema`：
+无论使用哪种 API 模式，你都需要定义一个 `config` 导出项（类型为 `Schema`）：
 
 ```ts
 import { Schema } from 'yumeri'
 
-export interface MyPluginConfig {
-  port: number
-  host: string
-  enableCache: boolean
-  roles: string[]
-  database: {
-    url: string
-    poolSize: number
-  }
+export interface MyConfig {
+  port: number;
 }
 
-export const config: Schema<MyPluginConfig> = Schema.object({
+export const config: Schema<MyConfig> = Schema.object({
   port: Schema.number('监听端口').default(14510),
-  host: Schema.string('监听地址').default('0.0.0.0'),
-  enableCache: Schema.boolean('是否启用缓存').default(false),
-  roles: Schema.array(Schema.string(), '角色列表').default(['user']),
-  database: Schema.object({
-    url: Schema.string('数据库连接').required(),
-    poolSize: Schema.number('连接池大小').default(10),
-  }, '数据库配置'),
-})
+});
 ```
 
-常用方法：
+## 获取配置内容
+
+解析后的配置会根据你选择的 API 模式注入到不同位置：
+
+<div class="functional-api">
+
+在函数式模式下，配置作为 `apply` 函数的第二个参数：
+
+```typescript
+export async function apply(ctx: Context, config: MyConfig) {
+  console.log(config.port);
+}
+```
+
+</div>
+
+<div class="decorator-api">
+
+在装饰器模式下，配置作为 `constructor` 的第二个参数：
+
+```typescript
+import { Plugin } from '@yumerijs/decorator';
+
+@Plugin
+export default class MyPlugin {
+  constructor(ctx: Context, private config: MyConfig) {
+    console.log(this.config.port);
+  }
+}
+```
+
+</div>
+
+## Schema 常用方法
 
 - `Schema.string/number/boolean`：基础类型
 - `Schema.array(inner)`：数组类型
 - `Schema.object(properties)`：对象类型
 - `Schema.enum(values)`：枚举类型
-- `Schema.extend(base, extension)`：扩展已有对象 Schema
-- `schema.required()`：必填
-- `schema.default(value)`：默认值
-
-配置读取时会自动应用默认值（`fallback` 机制），插件 `apply(ctx, config)` 中接收到的是普通对象：
-
-```ts
-export async function apply(ctx, config: MyPluginConfig) {
-  // config 已包含默认值
-  const { port, database } = config
-}
-```
-
-## 配置文件示例（YAML格式）
-
-```yaml
-# config.yml
-plugins:
-  yumeri-plugin-example:
-    port: 8080
-    host: '0.0.0.0'
-    database:
-      url: 'mongodb://localhost:27017/myapp'
-      poolSize: 20
-    roles:
-      - user
-      - admin
-    enableCache: true
-```
+- `schema.required()`：设为必填
+- `schema.default(value)`：设置默认值
 
 ## 最佳实践
 
-1. **提供清晰的描述**：为每个配置项提供清晰的描述，帮助用户理解配置项的用途。
-
-2. **设置合理的默认值**：为非必需的配置项设置合理的默认值，减少用户配置的复杂度。
-
-3. **使用枚举限制选项**：对于有限选项的配置项，使用枚举限制可选值，避免用户输入错误。
-
-4. **结构化配置**：使用对象和数组组织相关的配置项，使配置结构更清晰。
-
-5. **类型安全**：使用泛型约束配置对象类型，减少运行时错误。
-
-## 注意事项
-
-1. Yumeri 当前的配置校验还未完全成熟，请等待后续更改。
-
-2. 配置系统支持从 Schema 中获取默认值，如果配置内容中没有指定值，将使用 Schema 中的默认值。
-
-3. 由于框架处于快速迭代阶段，配置 API 可能会发生变化，请以最新代码为准。
+1. **设置合理的默认值**：减少用户的配置负担。
+2. **结构化配置**：对于复杂的插件，使用对象嵌套来组织配置项。
+3. **类型安全**：始终为配置定义接口，并将其传给 `Schema<T>` 以获得更好的开发体验。

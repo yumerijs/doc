@@ -18,12 +18,11 @@ export default defineConfig({
         lastUpdatedText: "最近更新时间",
         nav: [
           { text: "主页", link: "/" },
-          { text: "开始", link: "/start/" },
           {
             text: "开发",
             items: [
               { text: "开发指南", link: "/dev/" },
-              { text: "插件", link: "/plugins/" },
+              { text: "插件列表", link: "/plugins/" },
               { text: "API参考", link: "/api/" },
             ]
           },
@@ -31,26 +30,6 @@ export default defineConfig({
           { text: "鸣谢", link: "/structure/" },
         ],
         sidebar: {
-          '/start/': [
-            {
-              text: '开始',
-              items: [{
-                text: '安装',
-                items: [
-                  { text: '安装指南', link: '/start/install' },
-                  { text: '手动安装', link: '/start/direct' },
-                  { text: '作为组件使用', link: '/start/dep' }]
-              }, {
-                text: '使用',
-                items: [
-                  { text: '开始之前', link: '/start/' },
-                  { text: '插件系统', link: '/start/plugin' },
-                  { text: '路由系统', link: '/start/route' }
-                ]
-              }]
-            }
-          ],
-
           '/api/': [
             {
               text: 'API参考',
@@ -75,6 +54,7 @@ export default defineConfig({
                     { text: '中间件 (Middleware)', link: '/api/middleware' },
                     { text: '控制台 (Console)', link: '/api/console' },
                     { text: '数据库 (Database)', link: '/api/database' },
+                    { text: '存储 (Storage)', link: '/api/storage' },
                   ]
                 }
               ]
@@ -102,16 +82,33 @@ export default defineConfig({
 
           '/dev/': [
             {
-              text: '开发指南',
+              text: '入门指南',
               items: [
                 { text: '总览', link: '/dev/' },
+                { text: '环境搭建', link: '/dev/setup' },
+              ]
+            },
+            {
+              text: '核心概念',
+              items: [
                 { text: '插件基础', link: '/dev/plugin' },
-                { text: '路由开发', link: '/dev/route' },
-                { text: '钩子', link: '/dev/hook' },
+                { text: '装饰器 API', link: '/dev/decorator' },
+                { text: '路由系统', link: '/dev/route' },
                 { text: '配置构型', link: '/dev/config' },
-                { text: 'Schema 可视化', link: '/dev/schema-builder' },
+              ]
+            },
+            {
+              text: '进阶主题',
+              items: [
                 { text: '中间件', link: '/dev/middleware' },
+                { text: '钩子系统', link: '/dev/hook' },
                 { text: '事件监听', link: '/dev/event' },
+              ]
+            },
+            {
+              text: '其他',
+              items: [
+                { text: 'Schema 可视化', link: '/dev/schema-builder' },
                 { text: '渲染器（实验）', link: '/dev/renderer' }
               ]
             }
@@ -130,97 +127,39 @@ export default defineConfig({
         lastUpdatedText: "Last Updated",
         nav: [
           { text: "Home", link: "/en/" },
-          { text: "Getting Started", link: "/en/start/" },
           {
             text: "Development",
             items: [
-              { text: "Development Guide", link: "/en/dev/" },
+              { text: "Guide", link: "/en/dev/" },
               { text: "Plugins", link: "/en/plugins/" },
               { text: "API Reference", link: "/en/api/" },
             ]
           },
           { text: "WindyPear Team", link: "//doc.flweb.cn" },
-          { text: "Acknowledgements", link: "/en/structure/" },
         ],
         sidebar: {
-          '/en/start/': [
-            {
-              text: 'Getting Started',
-              items: [{
-                text: 'Installation',
-                items: [
-                  { text: 'Installation Guide', link: '/en/start/install' },
-                  { text: 'Manual Installation', link: '/en/start/direct' },
-                  { text: 'Use as Component', link: '/en/start/dep' }]
-              }, {
-                text: 'Usage',
-                items: [
-                  { text: 'Before Starting', link: '/en/start/' },
-                  { text: 'Plugin System', link: '/en/start/plugin' },
-                  { text: 'Routing System', link: '/en/start/route' }
-                ]
-              }]
-            }
-          ],
-
-          '/en/api/': [
-            {
-              text: 'API Reference',
-              items: [
-                { text: 'Overview', link: '/en/api/' },
-                {
-                  text: 'Core Modules',
-                  items: [
-                    { text: 'Route', link: '/en/api/route' },
-                    { text: 'Session', link: '/en/api/session' },
-                    { text: 'Context', link: '/en/api/context' },
-                    { text: 'Config', link: '/en/api/config' },
-                    { text: 'Platform', link: '/en/api/platform' },
-                    { text: 'Logger', link: '/en/api/logger' }
-                  ]
-                },
-                {
-                  text: 'Components',
-                  items: [
-                    { text: 'Event', link: '/en/api/event' },
-                    { text: 'Middleware', link: '/en/api/middleware' },
-                    { text: 'Console', link: '/en/api/console' },
-                    { text: 'Database', link: '/en/api/database' },
-                  ]
-                }
-              ]
-            }
-          ],
-
-          '/en/plugins/': [
-            {
-              text: 'Plugin List',
-              items: [
-                { text: 'Overview', link: '/en/plugins/' },
-                { text: 'analyse', link: '/en/plugins/analyse' },
-                { text: 'authority', link: '/en/plugins/authority' },
-                { text: 'files', link: '/en/plugins/files' },
-                { text: 'logger', link: '/en/plugins/logger' },
-                { text: 'market', link: '/en/plugins/market' },
-                { text: 'pages', link: '/en/plugins/pages' },
-                { text: 'permission', link: '/en/plugins/permission' },
-                { text: 'proxy-agent', link: '/en/plugins/proxy-agent' },
-                { text: 'tinytools', link: '/en/plugins/tinytools' },
-                { text: 'user', link: '/en/plugins/user' },
-              ]
-            }
-          ],
-
           '/en/dev/': [
             {
-              text: 'Development Guide',
+              text: 'Getting Started',
               items: [
                 { text: 'Overview', link: '/en/dev/' },
+                { text: 'Setup', link: '/en/dev/setup' },
+              ]
+            },
+            {
+              text: 'Core Concepts',
+              items: [
                 { text: 'Plugin Basics', link: '/en/dev/plugin' },
-                { text: 'Route Development', link: '/en/dev/route' },
-                { text: 'Hooks', link: '/en/dev/hook' },
+                { text: 'Decorator API', link: '/en/dev/decorator' },
+                { text: 'Routing System', link: '/en/dev/route' },
                 { text: 'Config Structure', link: '/en/dev/config' },
+              ]
+            },
+            {
+              text: 'Advanced',
+              items: [
                 { text: 'Middleware', link: '/en/dev/middleware' },
+                { text: 'Hook System', link: '/en/dev/hook' },
                 { text: 'Event Listening', link: '/en/dev/event' }
               ]
             }

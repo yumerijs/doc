@@ -1,2 +1,8 @@
-/* index.css */
-@import './var.css';
+/* 控制 API 切换的显示隐藏 */
+html.functional-api .decorator-api {
+  display: none !important;
+}
+
+html.decorator-api .functional-api {
+  display: none !important;
+}

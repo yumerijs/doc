@@ -1,11 +1,13 @@
-# 钩子系统
+# Hook System
 
-## 注册钩子
+The hook system allows you to insert functionality or content into specific locations (Hook Points).
+
+## Registering Hooks
 
 <div class="functional-api">
 
 ```typescript
-ctx.hook('pointName', 'hookName', (arg1, arg2) => {
+ctx.hook('pointName', 'hookName', (arg1) => {
   return 'result';
 });
 ```
@@ -14,7 +16,7 @@ ctx.hook('pointName', 'hookName', (arg1, arg2) => {
 
 <div class="decorator-api">
 
-使用 `@Hook` 装饰器注册钩子：
+Use the `@Hook` decorator:
 
 ```typescript
 import { Plugin, Hook } from '@yumerijs/decorator';
@@ -22,7 +24,7 @@ import { Plugin, Hook } from '@yumerijs/decorator';
 @Plugin
 export default class MyPlugin {
   @Hook('console', 'home')
-  renderHomeIcon() {
+  renderIcon() {
     return '<i>icon</i>';
   }
 }
@@ -30,8 +32,8 @@ export default class MyPlugin {
 
 </div>
 
-## 触发钩子
+## Executing Hooks
 
 ```typescript
-const result: any[] = await ctx.excuteHook('pointName', arg1, arg2);
+const result: any[] = await ctx.excuteHook('pointName', arg1);
 ```
