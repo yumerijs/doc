@@ -6,3 +6,10 @@ html.functional-api .decorator-api {
 html.decorator-api .functional-api {
   display: none !important;
 }
+
+/* 统一将品牌 LOGO 和首页 Hero 图片显示为圆形 */
+.VPNavBarTitle .logo,
+.VPHomeHero .image-src {
+  border-radius: 50%;
+  object-fit: cover;
+}
