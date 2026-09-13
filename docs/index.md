@@ -6,7 +6,7 @@ hero:
   text: 基于 NodeJS 的新一代模块化 Web 应用构建平台
   tagline: 极致的开发体验，天生的插件化基因
   image:
-    src: https://api.flweb.cn/logos/yumeri/circle.png
+    src: /logo.png
     alt: Yumeri
   actions:
     - theme: brand

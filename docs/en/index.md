@@ -6,7 +6,7 @@ hero:
   text: Next-Gen Modular Web Application Framework for Node.js
   tagline: Built for Developer Experience, Born with Modular DNA
   image:
-    src: https://api.flweb.cn/logos/yumeri/circle.png
+    src: /logo.png
     alt: Yumeri
   actions:
     - theme: brand
