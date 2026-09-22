@@ -2,243 +2,266 @@
 
 ## 概述
 
-Context（上下文）是 Yumerijs 框架中插件与核心交互的推荐接口。  
-每个插件在初始化时都会收到一个 Context 实例，通过它可以安全地访问框架功能，而无需直接操作 Core 实例。
+Context 是插件与 Core 交互的主入口。它负责管理插件注册的路由、事件、组件、服务、i18n、定时器和卸载清理，是 Yumeri 3.0 之后插件开发中最重要的运行时对象之一。
 
-使用 Context 而非直接使用 Core 的好处：
-- 提供了更安全的访问控制
-- 自动处理插件间的命令、路由和组件冲突
-- 记录插件与框架交互的关系，便于调试和管理
-- 简化插件开发流程
+它的主要职责包括：
+
+- 注册路由与中间件
+- 监听事件并发布事件
+- 注册组件、服务和资源
+- 管理插件生命周期：初始化与 dispose
+- 在插件卸载时自动清理定时器和副作用
 
 ---
 
 ## 类定义
 
-```typescript
+```ts
 export class Context {
-    private core: Core;
-    public pluginname: string;
+  public pluginname: string;
 
-    constructor(core: Core, pluginname: string);
+  constructor(core: Core, pluginname: string, module?: any, injections?: Record<string, any>);
 
-    route(path: string): Route;
-    on(name: string, listener: (...args: any[]) => Promise<void>): void;
-    use(name: string, callback: Function): void;
-    getCore(): Core;
-    async emit(event: string, ...args: any[]): Promise<void>;
-    // 已弃用 - 获取组件
-    getComponent(name: string): any;
-    registerComponent(name: string, component: any): void;
-    // 动态注入
-    component: Components;
+  inject(name: string, value: any): void;
+  affect(callback: () => void | Promise<void>): void;
+  route(path: string): Route;
+  on(name: string, listener: (...args: any[]) => Promise<void>): void;
+  use(name: string, callback: Middleware): void;
+  hook(name: string, hookname: string, callback: HookHandler): void;
+  executeHook(name: string, ...args: any[]): Promise<any>;
+  setStorage(storage: SessionStorageProcessor | Storage<SessionStorageSnapshot>): void;
+  getCore(): Core;
+  emit(event: string, ...args: any[]): Promise<void>;
+  registerComponent(name: string, component: any): void;
+  registerService(name: string, service: new (context: Context) => Service): void;
+  setInterval(callback: (...args: any[]) => any, ms?: number, ...args: any[]): NodeJS.Timeout | undefined;
+  setTimeout(callback: (...args: any[]) => any, ms?: number, ...args: any[]): NodeJS.Timeout | undefined;
+  clearInterval(timer?: NodeJS.Timeout | number | null): void;
+  clearTimeout(timer?: NodeJS.Timeout | number | null): void;
+  fork(name?: string, path?: string): Context;
+  plugin(module: Plugin, config?: any): Promise<Context>;
+  i18n(content: string | Record<string, any>, locale?: Record<string, string>): void;
+  dispose(): Promise<void>;
+}
 ```
 
 ---
 
-## 属性
+## 常用方法
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| pluginname | string | 当前插件的名称 |
+### inject(name: string, value: any): void
+
+向当前 Context 注入动态依赖，通常用于把服务对象、配置对象或工具实例挂到 `ctx.component` 上。
+
+```ts
+ctx.inject('db', databaseClient)
+```
 
 ---
 
-## 方法
+### affect(callback): void
+
+注册插件销毁时执行的清理回调。适合释放资源、关闭连接和清理缓存等工作。
+
+```ts
+ctx.affect(async () => {
+  await client.close()
+})
+```
+
+在插件卸载时，Yumeri 会统一执行这些回调，避免资源泄漏。
+
+---
+
+### setInterval / setTimeout
+
+3.0 之后，Context 提供了包装版的定时器，特点是：
+
+- 会在插件卸载时自动清理
+- 已排队但未执行的回调会被拦截
+- 同步异常和 async rejection 会被记录到日志
+
+```ts
+const timer = ctx.setInterval(() => {
+  console.log('tick')
+}, 1000)
+
+ctx.setTimeout(() => {
+  console.log('once')
+}, 2000)
+```
+
+也可以直接使用 `ctx.clearTimeout(...)` / `ctx.clearInterval(...)` 取消。
+
+---
 
 ### route(path: string): Route
 
-注册或获取路由。若路由已存在，会发出警告并返回已存在的路由实例。
+注册或获取路由。它会在插件内部维护 `this.routes`，并在卸载时统一移除。
 
-**参数：**
-- `path: string` - 路由路径
-
-**返回值：**
-- `Route` - 路由对象实例
-
-**示例：**
-```typescript
+```ts
 ctx.route('/hello')
-  .action(async (session, _) => {
-    session.body = 'Hello, World!';
-  });
+  .action(async (session) => {
+    session.respond('Hello, World!', 'plain')
+  })
 ```
 
 ---
 
-### on(name: string, listener: `(...args: any[]) => Promise<void>`): void
+### on / emit
 
-注册事件监听器，支持同一事件由多个插件监听。
+注册事件监听器，并通过 Core 统一分发。
 
-**参数：**
-- `name: string` - 事件名称
-- `listener: (...args: any[]) => Promise<void>` - 事件处理函数
-
-**示例：**
-```typescript
+```ts
 ctx.on('config-changed', async (newConfig) => {
-  console.log('配置已更新:', newConfig);
-});
+  console.log('配置更新：', newConfig)
+})
+
+await ctx.emit('config-changed', { mode: 'debug' })
 ```
 
 ---
 
-### use(name: string, callback: Function): void
+### registerComponent / registerService
 
-注册全局中间件，并记录该插件提供中间件的来源。
+用于注册插件提供的组件与服务。
 
-**参数：**
-- `name: string` - 中间件名称
-- `callback: Function` - 中间件函数
-
-**示例：**
-```typescript
-ctx.use('logger', async (session, next) => {
-  console.log(`请求开始: ${session.path}`);
-  await next();
-  console.log(`请求结束: ${session.path}`);
-});
+```ts
+ctx.registerComponent('db', databaseClient)
+ctx.registerService('userService', UserService)
 ```
+
+通过 `registerService()` 注册的服务类可以在插件中按类形式复用，并由框架统一维护依赖关系。
+
+#### Service 与 component 的区别
+
+- `component`：更偏“对象/工具/实例集合”，适合注入数据库、日志器、缓存客户端等。
+- `Service`：更偏“可复用的类”，通常用于封装业务逻辑和状态管理。
+
+```ts
+class UserService extends Service {
+  async getUser(id: string) {
+    return { id }
+  }
+}
+
+ctx.registerService('userService', UserService)
+```
+
+随后其他插件可以通过 `ctx.component.userService` 或强约束方式按依赖注入使用。
 
 ---
 
-### getCore(): Core
+### inject(name: string, value: any)
 
-获取 Core 实例。除非必要，否则应尽量避免直接使用 Core。
+`inject()` 是一个更直接的依赖注入入口，用于把对象挂到当前 Context 的组件容器里：
 
-**返回值：**
-- `Core` - 框架核心实例
-
-**示例：**
-```typescript
-const core = ctx.getCore();
+```ts
+ctx.inject('db', databaseClient)
+ctx.inject('logger', logger)
 ```
+
+随后可通过 `ctx.component.db` / `ctx.component.logger` 读取。它的用途与 `registerComponent()` 相似，但更适合运行时动态注入。
 
 ---
 
-### async emit(event: string, ...args: any[]): `Promise<void>`
+### i18n(content, locale)
 
-触发事件，由 Core 负责执行对应的监听器。
+注册多语言文案，内容可以是单个键值对或嵌套对象。
 
-**参数：**
-- `event: string` - 事件名称
-- `...args: any[]` - 事件参数
-
-**示例：**
-```typescript
-await ctx.emit('my-plugin-ready', { version: '1.0.0' });
+```ts
+ctx.i18n({
+  app: {
+    title: { zh: '示例应用', en: 'Sample App' }
+  }
+})
 ```
+
+配合 `Schema.key()` 使用时，可以让配置项说明文字与当前语言环境同步。
 
 ---
 
-### getComponent(name: string): any
+### fork / plugin
 
-获取已注册组件实例。
+创建子上下文或直接加载子插件。适合大型插件拆分或插件组合场景。
 
-> 已弃用，改为使用context.component进行动态依赖注入，降低耦合性
-
-**参数：**
-- `name: string` - 组件名称
-
-**返回值：**
-- `any` - 组件实例
-
-**示例：**
-```typescript
-const db = ctx.getComponent('database');
-if (db) await db.connect();
+```ts
+const child = ctx.fork('demo-child')
+await ctx.plugin(otherPlugin, { enabled: true })
 ```
+
+#### 典型用途
+
+- `fork()`：在一个插件内部创建独立子上下文，用于拆分模块或嵌套子插件。
+- `plugin()`：直接把另外一个插件模块加载到当前上下文中，适合组合式插件场景。
 
 ---
 
-### registerComponent(name: string, component: any): void
+### dispose()
 
-注册组件实例，若组件已存在会发出警告并忽略注册。
+插件被卸载时，Context 会自动：
 
-**参数：**
-- `name: string` - 组件名称
-- `component: any` - 组件实例
+- 停止所有定时器
+- 删除组件与服务注册
+- 删除路由与事件监听
+- 删除 hook 与 i18n
+- 执行 `affect()` 里注册的清理回调
 
-**示例：**
-```typescript
-ctx.registerComponent('my-service', {
-  getData: async () => ({ message: 'Hello from my service' })
-});
-```
-
----
-
-### fork(name: string): Context
-
-注册子 Context 并返回
-
-**参数：**
-- `name: string` - 子 Context 的插件名称
+这是 3.0 之后更稳健的插件生命周期保证。
 
 ---
 
 ## 最佳实践
 
-### 插件开发推荐模式
+### 1. 使用 affect 释放资源
 
-```typescript
-import { Context, Config } from 'yumerijs';
+```ts
+ctx.affect(async () => {
+  await db.close()
+})
+```
 
-export const schema = {
-  apiKey: ConfigSchema.string({ description: 'API密钥', required: true }),
-  timeout: ConfigSchema.number({ description: '超时时间(毫秒)', default: 3000 })
-};
+### 2. 通过 Context 管理异步副作用
 
-export async function apply(ctx: Context, config: Config) {
-  ctx.route('/my-route').action(async (session, params) => {
-    // 处理路由
-  });
+不要直接在插件外部持有全局定时器，统一走 `ctx.setTimeout()` / `ctx.setInterval()`。
 
-  ctx.registerComponent('my-component', {
-    // 组件实现
-  });
+### 3. 优先使用 Context，而非直接拿 Core
 
-  ctx.on('some-event', async (...args) => {
-    // 事件处理
-  });
-}
+```ts
+// 不推荐
+const core = ctx.getCore()
 
-export async function disable(ctx: Context) {
-  // 清理资源
-}
+// 更推荐
+ctx.route('/demo').action(async (session) => {
+  session.respond('ok', 'plain')
+})
 ```
 
 ---
 
-### 避免直接使用 Core
+## 相关文档
 
-**不推荐**：
-```typescript
-const core = ctx.getCore();
-core.route('/my-route').action(async (session, params) => { ... });
-```
-
-**推荐**：
-```typescript
-ctx.route('/my-route').action(async (session, params) => { ... });
-```
+- [Route API](./route)
+- [配置构型](../dev/config)
+- [插件基础](../dev/plugin)
 
 ---
 
-### 组件依赖管理
+## 组件依赖管理
 
 如果插件依赖其他插件提供的组件，应在元数据中声明依赖关系：
 
-```typescript
-export const depend = ['database', 'logger'];
-export const provide = ['my-service'];
+```ts
+export const depend = ['database', 'logger']
+export const provide = ['my-service']
 
 export async function apply(ctx: Context, config: Config) {
-  const db = ctx.component.database;
-  const logger = ctx.component.logger;
+  const db = ctx.component.database
+  const logger = ctx.component.logger
 
-  const myService = createMyService(db, logger);
-
-  ctx.registerComponent('my-service', myService);
+  const myService = createMyService(db, logger)
+  ctx.registerComponent('my-service', myService)
 }
 ```
+
+这类模式适合需要跨插件共享对象、客户端、缓存连接或服务能力的场景。
