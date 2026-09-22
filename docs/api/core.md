@@ -32,6 +32,7 @@ Core 默认配置（`coreConfigSchema`）：
 export class Core {
   public emitter: EventEmitter;
   public components: { [name: string]: any };
+  public services: { [name: string]: new (context: Context) => Service };
   public routes: Record<string, Route>;
   public logger: Logger;
   public globalMiddlewares: Record<string, Middleware>;
@@ -53,6 +54,9 @@ export class Core {
   registerComponent(name: string, component: any): void;
   getComponent(name: string): any;
   unregisterComponent(name: string): void;
+  registerService(name: string, service: new (context: Context) => Service): void;
+  getService(name: string, context: Context): Service | undefined;
+  unregisterService(name: string): void;
   on(event: string, listener: (...args: any[]) => Promise<void>): void;
   off(event: string, listener: (...args: any[]) => Promise<void>): void;
   emit(event: string, ...payload: any[]): void;
@@ -72,6 +76,7 @@ export class Core {
 |------|------|------|
 | emitter | `EventEmitter` | 内部事件总线 |
 | components | `{ [name: string]: any }` | 已注册的组件集合 |
+| services | `{ [name: string]: new (context: Context) => Service }` | 已注册的服务类集合 |
 | routes | `Record<string, Route>` | 已注册的路由集合 |
 | logger | `Logger` | 核心日志记录器 |
 | globalMiddlewares | `Record<string, Middleware>` | 全局中间件集合 |
@@ -154,6 +159,30 @@ const db = core.getComponent('database');
 ```typescript
 core.unregisterComponent('database');
 ```
+
+### registerService(name, service): void
+
+注册服务类。服务必须能够接收一个 `Context` 构造参数；Core 在消费方请求服务时创建实例，并把消费方上下文传入构造函数。
+
+```typescript
+class UserService extends Service {
+  constructor(public context: Context) {
+    super(context);
+  }
+}
+
+core.registerService('userService', UserService);
+```
+
+插件开发中通常应使用 `ctx.registerService()`，这样服务注册会绑定到插件的销毁流程。
+
+### getService(name, context): Service | undefined
+
+根据名称和调用方上下文创建服务实例。服务构造函数收到的就是传入的 `context`。
+
+### unregisterService(name): void
+
+取消注册服务类。
 
 ### on(event: string, listener: `(...args: any[]) => Promise<void>`): void
 

@@ -16,6 +16,9 @@ export class Logger {
   info(...args: any[]): void;
   warn(...args: any[]): void;
   error(...args: any[]): void;
+  debug(...args: any[]): void;
+  input(question: string): Promise<string>;
+  prompt(question: string): Promise<string>;
 }
 ```
 
@@ -25,6 +28,14 @@ export class Logger {
 |------|------|------|
 | title | string | 日志来源标识（私有） |
 | titleColor | any | 日志标题颜色（私有） |
+
+Logger 还提供全局日志级别控制：
+
+```typescript
+Logger.setLevel('debug');
+```
+
+可用级别为 `info`、`warn`、`error` 和 `debug`。`debug()` 只会在级别为 `debug` 时输出。
 
 ## 方法
 
@@ -79,6 +90,22 @@ logger.warn('Connection pool running low:', { available: 2, total: 10 });
 logger.error('Failed to connect to database:', err);
 logger.error('API request failed:', { url: '/api/data', status: 500 });
 ```
+
+### debug(...args: any[]): void
+
+记录调试级别日志。只有通过 `Logger.setLevel('debug')` 开启调试级别时才会输出。
+
+### `input(question: string): Promise<string>`
+
+在交互式终端显示问题并读取输入。非 TTY 环境调用会抛出错误，输入内容不会写入日志流。
+
+```typescript
+const answer = await logger.input('请输入端口：');
+```
+
+### `prompt(question: string): Promise<string>`
+
+`input()` 的别名，适合偏好 prompt 命名的调用方。
 
 ## 使用示例
 

@@ -131,7 +131,7 @@ ctx.registerComponent('db', databaseClient)
 ctx.registerService('userService', UserService)
 ```
 
-通过 `registerService()` 注册的服务类可以在插件中按类形式复用，并由框架统一维护依赖关系。
+`registerComponent()` 注册已经创建好的共享实例；`registerService()` 注册服务类。服务不会在注册处提前创建，而是在依赖它的插件中以该插件的 `Context` 实例化，因此服务构造函数可以接收到调用方上下文。
 
 #### Service 与 component 的区别
 
@@ -140,6 +140,10 @@ ctx.registerService('userService', UserService)
 
 ```ts
 class UserService extends Service {
+  constructor(private readonly ctx: Context) {
+    super(ctx)
+  }
+
   async getUser(id: string) {
     return { id }
   }
@@ -208,6 +212,8 @@ await ctx.plugin(otherPlugin, { enabled: true })
 - 执行 `affect()` 里注册的清理回调
 
 这是 3.0 之后更稳健的插件生命周期保证。
+
+`Context.on()` 注册的事件监听器也会在销毁时从 Core 移除。服务或组件如果创建了框架无法自动识别的连接、流等资源，应使用 `ctx.affect()` 注册对应清理逻辑。
 
 ---
 

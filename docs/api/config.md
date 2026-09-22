@@ -4,9 +4,9 @@
 
 Config 模块是 Yumerijs 框架中负责配置管理的核心组件，包含 `Config` 类和 `ConfigSchema` 类。`Config` 类用于存储和访问配置数据，而 `ConfigSchema` 类用于定义配置的结构、类型和验证规则。这两个类共同提供了类型安全的配置管理能力。
 
-## ConfigSchema 类
+## Schema 类
 
-`ConfigSchema` 类用于定义配置项的类型、默认值、描述等信息，支持类型验证。
+`Schema` 类用于定义配置项的类型、默认值、描述、枚举和嵌套结构，并以 `ConfigSchema` 别名导出。
 
 ### 类定义
 
@@ -46,6 +46,18 @@ export class ConfigSchema {
 }
 ```
 
+当前源码中的主要工厂方法使用描述文字作为第二个语义参数：
+
+```typescript
+Schema.string(description?: string): Schema<string>
+Schema.number(description?: string): Schema<number>
+Schema.boolean(description?: string): Schema<boolean>
+Schema.array<T>(inner: Schema<T>, description?: string): Schema<T[]>
+Schema.object<T>(properties: Record<string, Schema<any>>, description?: string): Schema<T>
+Schema.extend<T, U>(base: Schema<T>, extension: Record<string, Schema<any>>, description?: string): Schema<T & U>
+Schema.enum<L extends string | number>(values: L[], description?: string): Schema<L>
+```
+
 ### 属性
 
 | 属性 | 类型 | 描述 |
@@ -59,6 +71,8 @@ export class ConfigSchema {
 | properties | `Record<string, ConfigSchema>` | 对象属性定义（当type为object时使用） |
 
 ### 静态方法
+
+> 以下静态方法在现有文档中仍使用 `ConfigSchema` 名称；`ConfigSchema` 是 `Schema` 的兼容别名，两者指向同一个实现。
 
 #### static string(options?: `Omit<ConfigSchema, 'type' | 'items' | 'properties'>`): ConfigSchema
 
@@ -184,6 +198,21 @@ const serversSchema = ConfigSchema.array(
   }
 );
 ```
+
+### Schema 链式方法
+
+```typescript
+const port = Schema.number('监听端口')
+  .key('demo.config.port')
+  .default(14510)
+  .required();
+```
+
+- `required()`：标记配置项为必填
+- `default(value)`：设置默认值
+- `key(name)`：绑定说明文字的 i18n key
+
+`key()` 绑定的翻译优先按请求语言解析；没有命中时回退到 `description` 原文。框架还导出 `resolveDescription(schema, i18n?, langs?)`，用于按语言解析 Schema 说明文字。
 
 ## Config 类
 

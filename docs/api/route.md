@@ -8,6 +8,7 @@ Yumeri 3.0 之后，Route 增强了以下能力：
 
 - 支持 `:param` / `:param?` / `:param+` / `:param*` 四种参数模式
 - 支持 `action(method, handler)` 按 HTTP 方法注册多个处理器
+- 支持 `action(['GET', 'POST'], handler)` 为多个方法注册同一个处理器
 - 支持 `host()` 绑定域名或主机模式
 - 支持同一路径共享多个方法处理逻辑
 - 支持 path 参数和 host 参数同时匹配
@@ -68,6 +69,22 @@ ctx.route('/api/user')
 
 这也是 3.0 中最明显的增强之一：一条路由可以同时绑定不同 HTTP 方法，而不会被上一版简单覆盖。
 
+也可以传入方法数组：
+
+```ts
+ctx.route('/api/user')
+  .action(['GET', 'HEAD'], async (session) => {
+    session.respond('read user', 'plain')
+  })
+```
+
+方法名会统一转换为大写。同一路径再次通过 `ctx.route()` 获取时，会复用已有 `Route`，因此可以分开声明不同方法的处理器：
+
+```ts
+ctx.route('/api/user').action('GET', getUser)
+ctx.route('/api/user').action('POST', createUser)
+```
+
 ---
 
 ### use(middleware)
@@ -93,6 +110,18 @@ ctx.route('/api/:id')
   .action(async (session) => {
     session.respond('ok', 'plain')
   })
+```
+
+`methods()` 会把方法名转换为大写，并使紧随其后的无方法 `action(handler)` 只绑定到这些方法。多次调用 `methods()` 时，允许方法会合并。
+
+### hasHandler(method: string): boolean
+
+判断路由是否已经为指定 HTTP 方法注册处理器：
+
+```ts
+if (route.hasHandler('GET')) {
+  // 路由存在 GET 处理器
+}
 ```
 
 ---
