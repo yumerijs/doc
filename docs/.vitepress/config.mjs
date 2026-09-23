@@ -118,15 +118,6 @@ export default defineConfig({
               ]
             },
             {
-              text: '生命周期与资源',
-              items: [
-                { text: '运行时与生命周期', link: '/dev/runtime' },
-                { text: 'Context 运行时入口', link: '/dev/runtime/context' },
-                { text: '生命周期与清理', link: '/dev/runtime/lifecycle' },
-                { text: '定时器与副作用管理', link: '/dev/runtime/effects' },
-              ]
-            },
-            {
               text: '其他',
               items: [
                 { text: 'Schema 可视化', link: '/dev/schema-builder' },
