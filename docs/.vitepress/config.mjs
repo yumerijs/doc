@@ -82,29 +82,48 @@ export default defineConfig({
 
           '/dev/': [
             {
-              text: '入门指南',
+              text: '总览',
               items: [
-                { text: '总览', link: '/dev/' },
-                { text: '环境搭建', link: '/dev/setup' },
+                { text: '开发指南总览', link: '/dev/' },
               ]
             },
             {
-              text: '核心概念',
+              text: '快速开始',
               items: [
+                { text: '环境搭建', link: '/dev/setup' },
                 { text: '插件基础', link: '/dev/plugin' },
+                { text: '配置构型', link: '/dev/config' },
                 { text: '装饰器 API', link: '/dev/decorator' },
+              ]
+            },
+            {
+              text: '路由与请求',
+              items: [
+                { text: '路由系统', link: '/dev/route' },
+                { text: '中间件', link: '/dev/middleware' },
+                { text: '事件监听', link: '/dev/event' },
+                { text: '钩子系统', link: '/dev/hook' },
+              ]
+            },
+            {
+              text: '扩展机制',
+              items: [
                 { text: '组件提供', link: '/dev/component' },
                 { text: '服务提供', link: '/dev/service' },
-                { text: '路由系统', link: '/dev/route' },
-                { text: '配置构型', link: '/dev/config' },
+                { text: '运行时与生命周期', link: '/dev/runtime' },
+                { text: 'Context 运行时入口', link: '/dev/runtime/context' },
+                { text: '组件与依赖注入', link: '/dev/runtime/dependency' },
+                { text: '生命周期与清理', link: '/dev/runtime/lifecycle' },
+                { text: '定时器与副作用管理', link: '/dev/runtime/effects' },
               ]
             },
             {
-              text: '进阶主题',
+              text: '生命周期与资源',
               items: [
-                { text: '中间件', link: '/dev/middleware' },
-                { text: '钩子系统', link: '/dev/hook' },
-                { text: '事件监听', link: '/dev/event' },
+                { text: '运行时与生命周期', link: '/dev/runtime' },
+                { text: 'Context 运行时入口', link: '/dev/runtime/context' },
+                { text: '生命周期与清理', link: '/dev/runtime/lifecycle' },
+                { text: '定时器与副作用管理', link: '/dev/runtime/effects' },
               ]
             },
             {
