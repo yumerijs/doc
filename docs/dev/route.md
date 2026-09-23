@@ -39,12 +39,50 @@ export default class UserController {
 
 ## 路由规则
 
-Yumeri框架的路由规则遵循类 Express 语法，支持多种规则：
+Yumeri 框架的路由规则支持多种参数模式，核心能力不是只支持单一 `:id`，而是会按照路径段进行匹配：
 
 - 路径参数：`/user/:id`
-- 查询参数：`/user?id=123`
 - 可选参数：`/user/:id?`
-- 正则表达式支持
+- 多段参数：`/file/:path+`
+- 零到多段参数：`/file/:path*`
+- 查询参数：`/user?id=123`
+- host 限制：`ctx.route('/demo').host(['api.example.com'])`
+
+### 1）动态参数
+
+```typescript
+ctx.route('/user/:id').action(async (session, query, id) => {
+  session.respond(`user:${id}`, 'plain')
+})
+```
+
+### 2）可选参数
+
+```typescript
+ctx.route('/user/:id?').action(async (session, query, id) => {
+  session.respond(String(id ?? 'none'), 'plain')
+})
+```
+
+### 3）多段参数
+
+```typescript
+ctx.route('/files/:path+').action(async (session, query, path) => {
+  session.respond(path, 'plain')
+})
+```
+
+这里的 `+` 表示“一个或多个路径段”，`*` 表示“零个或多个路径段”。这在 REST-like 路径和资源目录场景中很常见。
+
+### 4）Host 绑定
+
+```typescript
+ctx.route('/admin').host(['admin.example.com']).action(async (session) => {
+  session.respond('admin portal', 'plain')
+})
+```
+
+如果你想让同一路径在不同域名/主机上执行不同逻辑，`host()` 是非常实用的能力。
 
 ## 路由方法
 
@@ -113,6 +151,8 @@ export default class EchoPlugin {
 
 中间件允许你在路由处理之前或之后执行逻辑：
 
+### 路由级中间件
+
 <div class="functional-api">
 
 ```typescript
@@ -149,3 +189,30 @@ export default class UserController {
 ```
 
 </div>
+
+## WebSocket 路由
+
+Yumeri 也支持在路由上挂接 WebSocket 处理器：
+
+```ts
+ctx.route('/ws').wsOn('connection', (ws, req, session) => {
+  ws.on('message', (data) => {
+    ws.send(`echo: ${data}`)
+  })
+})
+```
+
+这里的 `wsOn()` 适合做实时通信、消息推送、状态同步等场景。
+
+## 真实开发建议
+
+1. 对动态资源路径优先使用 `:param+` / `:param*`。
+2. 不要在同一条路由上混用过多逻辑，尽量用中间件拆分。
+3. 如果同一路径需要按域名分流，使用 `host()`。
+4. 如果需要处理实时连接，使用 `wsOn()` 而不是走普通 HTTP 响应。
+
+## 相关文档
+
+- [中间件](./middleware)
+- [事件监听](./event)
+- [钩子系统](./hook)

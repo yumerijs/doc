@@ -2,221 +2,241 @@
 
 ## 概述
 
-Storage 是 Yumeri 提供的数据存储抽象接口，用于为 Session 提供底层存储能力。
+Storage 是 Yumeri 会话数据存储的抽象层。它负责把 Session 的快照保存在某种底层介质中，例如内存、Redis、SQLite 或其他数据库实现。
 
-框架默认使用 `MemoryStorage` 作为存储实现，并通过 `SessionStorageProcessor` 完成 Session 数据的读写。
+框架默认使用 `MemoryStorage`，而真正的会话读写由 `SessionStorageProcessor` 负责。也就是说：
 
-开发者可以实现自己的 `Storage` 接口，并通过 `Core.setStorage()` 替换默认存储。
+- `Storage` 是底层存储接口
+- `SessionStorageProcessor` 是 Session 级别的读写协调器
+- `Core.setStorage()` 可以替换底层存储实现
+
+这个设计让框架适应不同部署场景：本地开发可用内存，生产环境可切换成 Redis 或自定义持久化层。
 
 ---
 
-# MaybePromise
-
-## 类型定义
+## MaybePromise
 
 ```typescript
 export type MaybePromise<T> = T | Promise<T>;
 ```
 
-用于表示接口既支持同步实现，也支持异步实现。
+这里的语义是：方法既支持同步返回，也支持异步返回。这样底层存储可以在不同环境中保持统一接口。
 
 ---
 
-# Storage
+## Storage 接口
 
-## 接口定义
-
-```typescript
+```ts
 export interface Storage<T = any> {
-    get(key: string): MaybePromise<T | undefined | null>;
-    set(key: string, value: T): MaybePromise<void>;
-    delete(key: string): MaybePromise<void>;
-    clear?(): MaybePromise<void>;
+  get(key: string): MaybePromise<T | undefined | null>;
+  set(key: string, value: T): MaybePromise<void>;
+  delete(key: string): MaybePromise<void>;
+  clear?(): MaybePromise<void>;
 }
 ```
 
-## 方法
+### 关键点
 
-| 方法 | 返回值 | 描述 |
-|------|--------|------|
-| get(key) | `MaybePromise<T \| undefined \| null>` | 获取指定键的数据 |
-| set(key, value) | `MaybePromise<void>` | 保存数据 |
-| delete(key) | `MaybePromise<void>` | 删除指定键 |
-| clear() | `MaybePromise<void>` | 清空全部数据（可选实现） |
+- `get()`：读取某个 key 的值
+- `set()`：写入某个 key
+- `delete()`：删除某个 key
+- `clear()`：可选，适合重置全表或全库
 
----
-
-## 自定义 Storage
-
-实现 `Storage` 接口即可作为 SessionStorageProcessor 的底层存储。
-
-```typescript
-class RedisStorage implements Storage<any> {
-
-    async get(key: string) {
-        return await redis.get(key);
-    }
-
-    async set(key: string, value: any) {
-        await redis.set(key, value);
-    }
-
-    async delete(key: string) {
-        await redis.del(key);
-    }
-
-    async clear() {
-        await redis.flushdb();
-    }
-
-}
-```
+这说明 Yumeri 的存储层不是“Session 特有对象”，而是可以复用的通用键值抽象。
 
 ---
 
-# MemoryStorage
+## 默认实现：MemoryStorage
 
-## 概述
-
-MemoryStorage 是框架提供的内存存储实现。
-
-## 类定义
-
-```typescript
+```ts
 export class MemoryStorage<T = any> implements Storage<T> {
+  private data = new Map<string, T>();
 
-    get(key: string): T | undefined;
+  get(key: string): T | undefined {
+    return this.data.get(key);
+  }
 
-    set(key: string, value: T): void;
+  set(key: string, value: T): void {
+    this.data.set(key, value);
+  }
 
-    delete(key: string): void;
+  delete(key: string): void {
+    this.data.delete(key);
+  }
 
-    clear(): void;
-
+  clear(): void {
+    this.data.clear();
+  }
 }
 ```
 
+默认行为非常简单：使用 `Map` 保存键值。适合开发环境、单进程调试和实验场景。
+
 ---
 
-# SessionStorageSnapshot
+## SessionSnapshot 结构
 
-## 概述
+Session 在底层存储中不是直接散落的 JSON，而是一个快照对象：
 
-SessionStorageSnapshot 表示 Session 在 Storage 中保存的数据结构。
-
-## 接口定义
-
-```typescript
+```ts
 export interface SessionStorageSnapshot {
-    sessionid: string;
-    data: Record<string, any>;
-    createdAt: number;
-    updatedAt: number;
-    expiresAt?: number | null;
+  sessionid: string;
+  data: Record<string, any>;
+  createdAt: number;
+  updatedAt: number;
+  expiresAt?: number | null;
 }
 ```
 
-## 属性
+每个字段的含义：
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| sessionid | string | Session ID |
-| data | `Record<string, any>` | Session 数据 |
-| createdAt | number | 创建时间（毫秒时间戳） |
-| updatedAt | number | 最后更新时间（毫秒时间戳） |
-| expiresAt | number \| null | 过期时间，为 `null` 时表示不过期 |
+- `sessionid`：会话 id
+- `data`：实际保存的数据
+- `createdAt`：创建时间戳
+- `updatedAt`：上次更新时间戳
+- `expiresAt`：过期时间戳；如果为 `null`，则表示不过期
+
+这使得框架可以把 Session 的生命周期和业务数据一起存储，并在读取时判断是否过期。
 
 ---
 
-# SessionStorageOptions
+## SessionStorageOptions
 
-## 接口定义
-
-```typescript
+```ts
 export interface SessionStorageOptions {
-    keyPrefix?: string;
-    ttl?: number;
+  keyPrefix?: string;
+  ttl?: number;
 }
 ```
 
-## 属性
+### 参数说明
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| keyPrefix | string | Storage 中保存 Session 时使用的键前缀，默认为 `"session:"` |
-| ttl | number | Session 生命周期（毫秒），未设置时不过期 |
+- `keyPrefix`：保存 Session 时的前缀，默认是 `session:`
+- `ttl`：整个 Session 的超时时间，单位毫秒
+
+这意味着你可以像下面这样配置：
+
+```ts
+const storage = new SessionStorageProcessor(new MemoryStorage(), {
+  keyPrefix: 'app-session:',
+  ttl: 30 * 60 * 1000,
+})
+```
 
 ---
 
-# SessionStorageProcessor
+## SessionStorageProcessor
 
-## 概述
+SessionStorageProcessor 是 Yumeri 的真正 Session 管理器，它负责：
 
-SessionStorageProcessor 用于管理 Session 数据在 Storage 中的读写。
-
-它负责：
-
-- 加载 Session
-- 保存 Session
+- 按 `sessionid` 读取数据
+- 通过快照保存数据
+- 判定是否过期
 - 删除 Session
-- 判断 Session 是否过期
+- 允许替换底层 `Storage`
 
-SessionStorageProcessor 使用任意实现了 `Storage` 接口的对象作为底层存储。
+### 关键实现逻辑
 
----
+```ts
+async load(sessionid: string): Promise<Record<string, any>> {
+  const snapshot = await this.storage.get(this.getKey(sessionid));
+  if (!snapshot) return {};
 
-## 类定义
+  if (this.isExpired(snapshot)) {
+    await this.delete(sessionid);
+    return {};
+  }
 
-```typescript
-export class SessionStorageProcessor {
-
-    constructor(
-        storage?: Storage<SessionStorageSnapshot>,
-        options?: SessionStorageOptions
-    );
-
-    public setStorage(
-        storage: Storage<SessionStorageSnapshot>
-    ): void;
-
-    public getStorage(): Storage<SessionStorageSnapshot>;
-
-    public load(
-        sessionid: string
-    ): Promise<Record<string, any>>;
-
-    public save(
-        sessionid: string,
-        data: Record<string, any>
-    ): Promise<void>;
-
-    public delete(
-        sessionid: string
-    ): Promise<void>;
-
-    public clear(): Promise<void>;
-
+  return { ...(snapshot.data || {}) };
 }
 ```
 
----
+```ts
+async save(sessionid: string, data: Record<string, any>): Promise<void> {
+  const key = this.getKey(sessionid);
+  const now = Date.now();
+  const current = await this.storage.get(key);
+  const createdAt = current && !this.isExpired(current) ? current.createdAt : now;
 
-## 构造函数
+  const snapshot: SessionStorageSnapshot = {
+    sessionid,
+    data: { ...(data || {}) },
+    createdAt,
+    updatedAt: now,
+    expiresAt: this.ttl ? now + this.ttl : null,
+  };
 
-```typescript
-new SessionStorageProcessor(storage?, options?)
+  await this.storage.set(key, snapshot);
+}
 ```
 
-### 参数
+这说明：
 
-| 参数 | 类型 | 描述 |
-|------|------|------|
-| storage | `Storage<SessionStorageSnapshot>` | 底层存储实现，默认为 `MemoryStorage` |
-| options | SessionStorageOptions | 配置项 |
+1. 读取时如果过期就直接清理
+2. 保存时会维护 `createdAt` / `updatedAt`
+3. TTL 是全 Session 生命周期，而不是单个字段级 TTL
 
 ---
 
-## 方法
+## 自定义 Storage 的实践
+
+你可以自己实现一个 `Storage`：
+
+```ts
+class RedisStorage implements Storage<any> {
+  async get(key: string) {
+    return await redis.get(key)
+  }
+
+  async set(key: string, value: any) {
+    await redis.set(key, JSON.stringify(value))
+  }
+
+  async delete(key: string) {
+    await redis.del(key)
+  }
+
+  async clear() {
+    await redis.flushdb()
+  }
+}
+```
+
+然后挂到 Context 或 Core：
+
+```ts
+const processor = new SessionStorageProcessor(new RedisStorage(), {
+  keyPrefix: 'yumeri:',
+  ttl: 60 * 60 * 1000,
+})
+
+ctx.setStorage(processor)
+```
+
+如果你不想替换整个 `SessionStorageProcessor`，也可以直接提供底层存储对象：
+
+```ts
+ctx.setStorage(new RedisStorage())
+```
+
+因为 `Context.setStorage()` 和 `Core.setStorage()` 都允许直接替换底层存储。
+
+---
+
+## 实际使用建议
+
+1. 开发环境使用默认 `MemoryStorage`，启动快且调试简单。
+2. 生产环境优先做持久化存储，以避免进程重启导致 Session 丢失。
+3. 若业务有明确会话超时策略，优先使用 `ttl` 来统一控制。
+4. 自定义 `Storage` 时，注意 `get()` / `set()` / `delete()` 的幂等性和异常处理。
+
+---
+
+## 相关文档
+
+- [Context 运行时入口](../dev/runtime/context)
+- [生命周期与清理](../dev/runtime/lifecycle)
+- [插件基础](../dev/plugin)
 
 ### `load(sessionid: string): Promise<Record<string, any>>`
 

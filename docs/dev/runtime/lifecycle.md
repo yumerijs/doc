@@ -57,6 +57,34 @@ export async function apply(ctx: Context) {
 
 这使得插件可以在热更新、禁用、重新加载时安全回收资源。
 
+### 一个更真实的生命周期例子
+
+```ts
+export async function apply(ctx: Context) {
+  const client = createClient()
+  await client.connect()
+
+  ctx.registerComponent('client', client)
+  ctx.route('/status').action(async (session) => {
+    const state = await client.getStatus()
+    session.respond(state, 'json')
+  })
+
+  ctx.affect(async () => {
+    await client.close()
+  })
+}
+```
+
+这里的顺序是：
+
+1. 插件启动创建资源
+2. 注册路由和组件
+3. 路由请求可用
+4. 插件卸载时由 `dispose()` 统一清理资源
+
+这就是 Yumeri 推荐的生命周期写法。
+
 ## 4. 为什么不能只靠 `finally` 处理
 
 很多开发者会在插件入口里写：
